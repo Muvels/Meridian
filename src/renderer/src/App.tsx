@@ -129,7 +129,7 @@ function App(): JSX.Element {
         <div
         hidden={isPinned || !isOpen}
         onMouseEnter={() => setOpen(false)}
-        className="absolute right-0 h-full w-full z-50"
+        className="absolute right-0 h-full w-4/5 z-50"
       />
       <Drawer>
         <DrawerContent id="no-drag" className="bg-default">

@@ -1,5 +1,5 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
-import { join } from 'path'
+import { app, shell, BrowserWindow, ipcMain, session } from 'electron'
+import path, { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
@@ -66,6 +66,17 @@ app.whenReady().then(() => {
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+
+  const extensionPath = path.join(
+    '/Users/matteomarolt/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/6.0.1_0' // Replace with the actual path
+  )
+
+  try {
+    session.defaultSession.loadExtension(extensionPath)
+    console.log('React Developer Tools loaded successfully.')
+  } catch (err) {
+    console.error('Failed to load React Developer Tools:', err)
+  }
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common

@@ -1,4 +1,13 @@
-import { Calendar, Home, Inbox, Search, Settings, RotateCcw, Undo2, Redo2 } from 'lucide-react'
+import { Search, RotateCcw, Undo2, Redo2, PanelRightClose } from 'lucide-react';
+import clsx from 'clsx';
+import { useEffect, useRef, useState } from 'react';
+import { useTabs } from 'src/hooks/use-tabs';
+import { useSidebarStore } from 'src/store/sidebar';
+
+import Tabs from '../Tabs';
+import { DrawerTrigger } from '../ui/drawer';
+import { Button } from '../ui/button';
+import NativeControls from '../NativeControls';
 
 import {
   Sidebar,
@@ -9,82 +18,63 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem
-} from '@/components/ui/sidebar'
-import { Drawer } from 'vaul'
-import { Button } from '../ui/button'
-import {
-  DrawerTrigger,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerClose
-} from '../ui/drawer'
-import Tabs from '../Tabs'
-import clsx from 'clsx'
-import { useWebview } from 'src/contexts/WebviewContext'
-import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react'
-import { useTabs } from 'src/hooks/use-tabs'
-import { useSidebarStore } from 'src/store/sidebar'
+} from '@/components/ui/sidebar';
 
 interface SidebarProps {
-  currentTab: string | null
-  currentTabId: string | null
+  currentTab: string | null;
+  currentTabId: string | null;
 }
 
 export function AppSidebar(props: SidebarProps) {
-  const { currentTab } = props
-  const { isPinned, isOpen, setOpen } = useSidebarStore()
-  const [canGoBack, setCanGoBack] = useState(false)
-  const [canGoForward, setCanGoForward] = useState(false)
-  const { getTab } = useTabs()
-  const webviewRef = useRef<Electron.WebviewTag | null>(
-    null
-  ) as MutableRefObject<Electron.WebviewTag | null>
+  const { currentTab } = props;
+  const { isPinned, isOpen, setOpen, setPinned } = useSidebarStore();
+  const [canGoBack, setCanGoBack] = useState(false);
+  const [canGoForward, setCanGoForward] = useState(false);
+  const { getTab } = useTabs();
+  const webviewRef = useRef<Electron.WebviewTag | null>(null);
 
-  webviewRef.current = getTab()
+  webviewRef.current = getTab();
 
   useEffect(() => {
-    webviewRef.current = getTab()
-    console.log('webviewRef', webviewRef)
+    webviewRef.current = getTab();
+    console.log('webviewRef', webviewRef);
     const updateNavButtons = () => {
       if (webviewRef) {
-        setCanGoBack(webviewRef.current.canGoBack())
-        setCanGoForward(webviewRef.current.canGoForward())
+        setCanGoBack(webviewRef.current.canGoBack());
+        setCanGoForward(webviewRef.current.canGoForward());
       }
-    }
+    };
 
-    const handleDomReady = () => updateNavButtons()
+    const handleDomReady = () => updateNavButtons();
 
     if (webviewRef.current) {
-      webviewRef.current.addEventListener('dom-ready', handleDomReady)
-      webviewRef.current.addEventListener('did-navigate', updateNavButtons)
-      webviewRef.current.addEventListener('did-navigate-in-page', updateNavButtons)
+      webviewRef.current.addEventListener('dom-ready', handleDomReady);
+      webviewRef.current.addEventListener('did-navigate', updateNavButtons);
+      webviewRef.current.addEventListener('did-navigate-in-page', updateNavButtons);
     }
 
     return () => {
       if (webviewRef.current) {
-        webviewRef.current.removeEventListener('dom-ready', handleDomReady)
-        webviewRef.current.removeEventListener('did-navigate', updateNavButtons)
-        webviewRef.current.removeEventListener('did-navigate-in-page', updateNavButtons)
+        webviewRef.current.removeEventListener('dom-ready', handleDomReady);
+        webviewRef.current.removeEventListener('did-navigate', updateNavButtons);
+        webviewRef.current.removeEventListener('did-navigate-in-page', updateNavButtons);
       }
-    }
-  }, [webviewRef, webviewRef.current])
+    };
+  }, [webviewRef, webviewRef.current]);
 
   const handleReload = () => {
-    webviewRef?.current?.reload()
-  }
+    webviewRef?.current?.reload();
+  };
 
   const handleUndo = () => {
-    webviewRef?.current?.goBack()
-  }
+    webviewRef?.current?.goBack();
+  };
 
   const handleRedo = () => {
-    webviewRef?.current?.goForward()
-  }
+    webviewRef?.current?.goForward();
+  };
 
-  console.log(canGoBack, canGoForward)
+  console.log(canGoBack, canGoForward);
 
   return (
     <Sidebar
@@ -100,7 +90,14 @@ export function AppSidebar(props: SidebarProps) {
       variant={isPinned ? 'sidebar' : 'floating'}
     >
       <SidebarContent id="no-drag" className="bg-default border-none box-border">
-        <div className="w-full h-10" id="placeholder"></div>
+        <NativeControls>
+          <Button
+            className="bg-transparent border-none shadow-none w-10"
+            onClick={() => setPinned(!isPinned)}
+          >
+            <PanelRightClose />
+          </Button>
+        </NativeControls>
         <Button className="bg-[#b39e55] border-none mx-2 z-10">
           <div className="flex justify-between items-center w-full">
             <Search className="text-[#8a793f]" />
@@ -152,5 +149,5 @@ export function AppSidebar(props: SidebarProps) {
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>
-  )
+  );
 }

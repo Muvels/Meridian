@@ -1,26 +1,21 @@
-import React from 'react'
-import useTabStore, { TabGroup, useTabGroupStore } from '@renderer/store/tabs'
-import { Plus } from 'lucide-react'
-import { useLayoutStore } from '@renderer/store/layout'
+import React from 'react';
+import { useTabGroupStore } from '@renderer/store/tabs';
+import { Plus } from 'lucide-react';
+import { useLayoutStore } from '@renderer/store/layout';
+import { DndContext, DragEndEvent } from '@dnd-kit/core';
+import { arrayMove, SortableContext } from '@dnd-kit/sortable';
+
+import { DrawerTrigger } from '../ui/drawer';
+
+import TabGroupItem from './TabGroupItem';
+
 import {
   ContextMenu,
-  ContextMenuCheckboxItem,
   ContextMenuContent,
   ContextMenuItem,
-  ContextMenuLabel,
-  ContextMenuRadioGroup,
-  ContextMenuRadioItem,
-  ContextMenuSeparator,
   ContextMenuShortcut,
-  ContextMenuSub,
-  ContextMenuSubContent,
-  ContextMenuSubTrigger,
   ContextMenuTrigger
-} from '@/components/ui/context-menu'
-import { DndContext, DragEndEvent } from '@dnd-kit/core'
-import { arrayMove, SortableContext } from '@dnd-kit/sortable'
-import { DrawerTrigger } from '../ui/drawer'
-import TabGroupItem from './TabGroupItem'
+} from '@/components/ui/context-menu';
 
 const Tabs: React.FC = () => {
   // Subscribe to specific parts of Zustand state like Redux
@@ -28,7 +23,7 @@ const Tabs: React.FC = () => {
   // const activeTab = useTabStore((state) => state.activeTab)
   // const { addTab, setActiveTab } = useTabStore()
   const { tree, setDefaulTree, switchTree, splitVertically, isTabVisible, splitHorizontally } =
-    useLayoutStore()
+    useLayoutStore();
 
   const {
     activeTabGroup: activeTabGroupId,
@@ -38,27 +33,27 @@ const Tabs: React.FC = () => {
     getTabGroupById,
     layout,
     updateTabGroupOrder
-  } = useTabGroupStore()
+  } = useTabGroupStore();
 
-  const activeTabGroup = getTabGroupById(activeTabGroupId!)
+  const activeTabGroup = getTabGroupById(activeTabGroupId);
 
   // const closeTab = useTabStore((state) => state.closeTab)
   const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event
-    console.log('Active ID:', active.id)
-    console.log('Over ID:', over?.id)
+    const { active, over } = event;
+    console.log('Active ID:', active.id);
+    console.log('Over ID:', over?.id);
 
-    if (!over || active.id === over.id) return
+    if (!over || active.id === over.id) return;
 
-    const oldIndex = tabGroups.findIndex((group) => group.id === active.id)
-    const newIndex = tabGroups.findIndex((group) => group.id === over.id)
+    const oldIndex = tabGroups.findIndex((group) => group.id === active.id);
+    const newIndex = tabGroups.findIndex((group) => group.id === over.id);
 
     if (oldIndex !== -1 && newIndex !== -1) {
-      const newTabGroups = arrayMove(tabGroups, oldIndex, newIndex)
-      console.log('New Order:', newTabGroups)
-      updateTabGroupOrder(newTabGroups)
+      const newTabGroups = arrayMove(tabGroups, oldIndex, newIndex);
+      console.log('New Order:', newTabGroups);
+      updateTabGroupOrder(newTabGroups);
     }
-  }
+  };
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
@@ -76,7 +71,7 @@ const Tabs: React.FC = () => {
               <ContextMenuTrigger>
                 <TabGroupItem
                   setActiveTabGroup={setActiveTabGroup}
-                  activeTabGroup={activeTabGroup!}
+                  activeTabGroup={activeTabGroup}
                   tabGroup={tabGroup}
                   tab={tabGroup.active}
                 />
@@ -112,7 +107,7 @@ const Tabs: React.FC = () => {
         </SortableContext>
       </div>
     </DndContext>
-  )
-}
+  );
+};
 
-export default Tabs
+export default Tabs;

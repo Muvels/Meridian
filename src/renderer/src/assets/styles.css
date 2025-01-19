@@ -145,11 +145,11 @@
   .tabs-scroll-container::-webkit-scrollbar {
     width: 8px; /* Width of the scrollbar */
   }
-  
+
   .tabs-scroll-container::-webkit-scrollbar-track {
     background: transparent; /* Transparent background for the track */
   }
-  
+
   .tabs-scroll-container::-webkit-scrollbar-thumb {
     background-color: #ccc; /* Color of the scrollbar thumb */
     border-radius: 0; /* Rounded corners for the thumb */
@@ -163,7 +163,7 @@
 
 .mosaic .mosaic-window-toolbar {
   background-color: #40403e;
-  color: white
+  color: white;
 }
 
 .mosaic.hide-toolbar .mosaic-window-body {
@@ -183,12 +183,12 @@
 }
 
 .mosaic-split {
-  z-index: 9999 !important; 
+  z-index: 9999 !important;
   pointer-events: auto;
 }
 
 .mosaic-split-line {
   z-index: 9999 !important;
   pointer-events: auto;
-  background-color: rgba(0,0,0,0.2); /* or a color of your choice */
+  background-color: rgba(0, 0, 0, 0.2); /* or a color of your choice */
 }

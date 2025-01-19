@@ -1,26 +1,26 @@
-import { create, StoreApi, UseBoundStore } from 'zustand'
-import { v4 as uuid } from 'uuid'
-import { MosaicNode } from 'react-mosaic-component/lib/types'
+import { create, StoreApi, UseBoundStore } from 'zustand';
+import { v4 as uuid } from 'uuid';
+import { MosaicNode } from 'react-mosaic-component/lib/types';
 
 export interface Tab {
-  id: string
-  url: string
-  title?: string
-  icon?: string
+  id: string;
+  url: string;
+  title?: string;
+  icon?: string;
 }
 
 export interface TabGroup {
-  id: string
-  tabs: Tab[]
-  active: Tab
-  layout: MosaicNode<string>
+  id: string;
+  tabs: Tab[];
+  active: Tab;
+  layout: MosaicNode<string>;
 }
 
 function splitNode(
   type: 'row' | 'column',
   layout: MosaicNode<string>,
   nodeIdToSplit: string,
-  newFirstNode: string,
+  newFirstNode: string
 ): MosaicNode<string> {
   if (typeof layout === 'string') {
     // If the layout is a leaf node and matches the nodeIdToSplit, replace it
@@ -30,35 +30,35 @@ function splitNode(
         first: newFirstNode,
         second: nodeIdToSplit,
         splitPercentage: 50
-      }
+      };
     }
-    return layout // No change if it doesn't match
+    return layout; // No change if it doesn't match
   }
   return {
     // If the layout is a parent node, recursively traverse the children
     ...layout,
     first: splitNode(type, layout.first, nodeIdToSplit, newFirstNode),
     second: splitNode(type, layout.second, nodeIdToSplit, newFirstNode)
-  }
+  };
 }
 
 interface TabGroupStore {
-  tabGroups: TabGroup[]
-  activeTabGroup: string | null
-  addTabGroup: () => void
-  setActiveTabGroup: (tabGroup: TabGroup) => void
-  getTabGroupById: (tabGroupId: string) => TabGroup | null
-  updateTabUrl: (tabGroup: TabGroup, tab: Tab, url: string) => void
-  updateTabTitle: (tabGroup: TabGroup, tab: Tab, title: string) => void
-  updatedLayout: (newLayout: MosaicNode<string>, pActiveTabGroup?: TabGroup) => void
-  updateTabGroupOrder: (newTabGroups: TabGroup[]) => void
-  setActiveTab: (newActiveTabId: string, pActiveTabGroup?: TabGroup) => void
+  tabGroups: TabGroup[];
+  activeTabGroup: string | null;
+  addTabGroup: () => void;
+  setActiveTabGroup: (tabGroup: TabGroup) => void;
+  getTabGroupById: (tabGroupId: string) => TabGroup | null;
+  updateTabUrl: (tabGroup: TabGroup, tab: Tab, url: string) => void;
+  updateTabTitle: (tabGroup: TabGroup, tab: Tab, title: string) => void;
+  updatedLayout: (newLayout: MosaicNode<string>, pActiveTabGroup?: TabGroup) => void;
+  updateTabGroupOrder: (newTabGroups: TabGroup[]) => void;
+  setActiveTab: (newActiveTabId: string, pActiveTabGroup?: TabGroup) => void;
   layout: {
     split: {
-      vertical: () => void
-      horizontal: () => void
-    }
-  }
+      vertical: () => void;
+      horizontal: () => void;
+    };
+  };
 }
 
 export const createTab = (): Tab => ({
@@ -66,33 +66,33 @@ export const createTab = (): Tab => ({
   url: 'https://google.com',
   title: undefined,
   icon: undefined
-})
+});
 
 export const useTabGroupStore = create<TabGroupStore>((set, get) => ({
   tabGroups: [], // Initialize tabs as an empty array
   activeTabGroup: null, // Correct initialization
   addTabGroup: (): void =>
     set((state) => {
-      const actualTab = createTab()
-      const id = uuid()
+      const actualTab = createTab();
+      const id = uuid();
       const newTabGroup: TabGroup = {
         id,
         active: actualTab,
         tabs: [actualTab],
         layout: actualTab.id
-      }
+      };
       return {
         tabGroups: [...state.tabGroups, newTabGroup],
         activeTabGroup: newTabGroup.id
-      }
+      };
     }),
-  setActiveTabGroup: (tabGroup: TabGroup): void => {
-    set({ activeTabGroup: tabGroup.id })
+  setActiveTabGroup: (tabGroup): void => {
+    set({ activeTabGroup: tabGroup.id });
   },
   setActiveTab: (newActiveTabId: string, pActiveTabGroup?: TabGroup): void => {
-    if (newActiveTabId === useTabGroupStore.getState().activeTabGroup) return
+    if (newActiveTabId === useTabGroupStore.getState().activeTabGroup) return;
     set((state) => {
-      const activeTabGroup = pActiveTabGroup ?? state.getTabGroupById(state.activeTabGroup!)
+      const activeTabGroup = pActiveTabGroup ?? state.getTabGroupById(state.activeTabGroup);
       return {
         //...state
         tabGroups: state.tabGroups.map((group) =>
@@ -100,10 +100,11 @@ export const useTabGroupStore = create<TabGroupStore>((set, get) => ({
             ? {
                 ...group,
                 active: group.tabs.find((t) => t.id === newActiveTabId) ?? group.active
-        } : group
+              }
+            : group
         )
-      }
-    })
+      };
+    });
   },
   updateTabUrl: (tabGroup: TabGroup, tab: Tab, url: string): void =>
     set((state) => ({
@@ -131,51 +132,52 @@ export const useTabGroupStore = create<TabGroupStore>((set, get) => ({
     })),
   updatedLayout: (newLayout: MosaicNode<string>, pActiveTabGroup?: TabGroup): void => {
     set((state) => {
-      const activeTabGroup = pActiveTabGroup ?? state.getTabGroupById(state.activeTabGroup!)
+      const activeTabGroup = pActiveTabGroup ?? state.getTabGroupById(state.activeTabGroup);
       return {
         tabGroups: state.tabGroups.map((group) =>
           group.id === activeTabGroup?.id
             ? {
                 ...group,
                 layout: newLayout
-        } : group
+              }
+            : group
         )
-      }
-    })
+      };
+    });
   },
   updateTabGroupOrder: (newTabGroups: TabGroup[]): void =>
     set(() => ({
-      tabGroups: newTabGroups, // Replace the array with a reordered one
+      tabGroups: newTabGroups // Replace the array with a reordered one
     })),
   getTabGroupById: (tabGroupId: string): TabGroup | null => {
-    const { tabGroups } = get() // Access the current state
-    return tabGroups.find((group) => group.id === tabGroupId) || null
+    const { tabGroups } = get(); // Access the current state
+    return tabGroups.find((group) => group.id === tabGroupId) || null;
   },
   layout: {
     split: {
       vertical: (): void => {
         set((state) => {
-          const activeTabGroupId = state.activeTabGroup
+          const activeTabGroupId = state.activeTabGroup;
 
           if (!activeTabGroupId) {
-            console.warn('No active tab group to split.')
-            return state
+            console.warn('No active tab group to split.');
+            return state;
           }
 
-          const activeTabGroup = state.tabGroups.find((group) => group.id === activeTabGroupId)
+          const activeTabGroup = state.tabGroups.find((group) => group.id === activeTabGroupId);
 
           if (!activeTabGroup) {
-            console.warn('Active tab group not found.')
-            return state
+            console.warn('Active tab group not found.');
+            return state;
           }
 
-          const newTab = createTab() // Create a new tab
+          const newTab = createTab(); // Create a new tab
           const updatedLayout = splitNode(
             'column',
             activeTabGroup.layout,
             activeTabGroup.active.id,
             newTab.id
-          )
+          );
 
           return {
             tabGroups: state.tabGroups.map((group) =>
@@ -188,32 +190,32 @@ export const useTabGroupStore = create<TabGroupStore>((set, get) => ({
                   }
                 : group
             )
-          }
-        })
+          };
+        });
       },
       horizontal: (): void => {
         set((state) => {
-          const activeTabGroupId = state.activeTabGroup
+          const activeTabGroupId = state.activeTabGroup;
 
           if (!activeTabGroupId) {
-            console.warn('No active tab group to split.')
-            return state
+            console.warn('No active tab group to split.');
+            return state;
           }
 
-          const activeTabGroup = state.tabGroups.find((group) => group.id === activeTabGroupId)
+          const activeTabGroup = state.tabGroups.find((group) => group.id === activeTabGroupId);
 
           if (!activeTabGroup) {
-            console.warn('Active tab group not found.')
-            return state
+            console.warn('Active tab group not found.');
+            return state;
           }
 
-          const newTab = createTab()
+          const newTab = createTab();
           const updatedLayout = splitNode(
             'row',
             activeTabGroup.layout,
             activeTabGroup.active.id,
             newTab.id
-          )
+          );
 
           return {
             tabGroups: state.tabGroups.map((group) =>
@@ -226,12 +228,12 @@ export const useTabGroupStore = create<TabGroupStore>((set, get) => ({
                   }
                 : group
             )
-          }
-        })
+          };
+        });
       }
     }
   }
-}))
+}));
 
 // class Tab {
 //   private id: string
@@ -306,9 +308,9 @@ export const useTabGroupStore = create<TabGroupStore>((set, get) => ({
 //       tabs: state.tabs.map((tab) => (tab.id === id ? { ...tab, title } : tab))
 //     }))
 // }))
-export default useTabGroupStore
+export default useTabGroupStore;
 if (typeof window !== 'undefined') {
-  ;(
+  (
     window as unknown as { useTabGroupStore: UseBoundStore<StoreApi<TabGroupStore>> }
-  ).useTabGroupStore = useTabGroupStore
+  ).useTabGroupStore = useTabGroupStore;
 }

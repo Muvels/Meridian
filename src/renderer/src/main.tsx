@@ -1,12 +1,13 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App'
-import { WebviewProvider } from 'src/contexts/WebviewContext'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { WebviewProvider } from 'src/contexts/WebviewContext';
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+import App from './App';
+
+ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <WebviewProvider>
       <App />
     </WebviewProvider>
   </React.StrictMode>
-)
+);

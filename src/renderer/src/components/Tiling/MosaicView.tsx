@@ -1,22 +1,22 @@
 // MosaicView.tsx
-import { memo } from 'react'
-import { Mosaic, MosaicWindow } from 'react-mosaic-component'
-import { WebViewPortal } from '../../components/Webview/portal'
-import { Toolbar } from '../../components/Toolbar'
-import clsx from 'clsx'
-import { TabGroup } from '@renderer/store/tabs'
-import { useTabs } from '@renderer/hooks/use-tabs'
+import { memo } from 'react';
+import { Mosaic, MosaicWindow } from 'react-mosaic-component';
+import clsx from 'clsx';
+import { TabGroup } from '@renderer/store/tabs';
+
+import { Toolbar } from '../../components/Toolbar';
+import { WebViewPortal } from '../../components/Webview/portal';
 
 interface MosaicViewProps {
-  tabGroups: TabGroup[]
-  activeTabGroupId: string
-  isClickable: boolean
-  updatedLayout: (newNode: any) => void
-  setIsClickable: (val: boolean) => void
+  tabGroups: TabGroup[];
+  activeTabGroupId: string;
+  isClickable: boolean;
+  updatedLayout: (newNode: any) => void;
+  setIsClickable: (val: boolean) => void;
 }
 
 export const MosaicViewComponent = (props: MosaicViewProps): JSX.Element => {
-  const { tabGroups, activeTabGroupId, isClickable, updatedLayout, setIsClickable } = props
+  const { tabGroups, activeTabGroupId, isClickable, updatedLayout, setIsClickable } = props;
 
   return (
     <>
@@ -32,27 +32,27 @@ export const MosaicViewComponent = (props: MosaicViewProps): JSX.Element => {
           // We only store final layout changes on "onRelease"
           onChange={() => {
             // Optionally disable pointer events while resizing
-            setIsClickable(false)
+            setIsClickable(false);
           }}
           onRelease={(newNode) => {
-            console.log('Layout change completed', newNode)
-            newNode && updatedLayout(newNode)
-            setIsClickable(true)
+            console.log('Layout change completed', newNode);
+            newNode && updatedLayout(newNode);
+            setIsClickable(true);
           }}
           renderTile={(id: string, path) => {
-            const tab = tabGroup.tabs.find((t) => t.id === id)
+            const tab = tabGroup.tabs.find((t) => t.id === id);
             return (
               <MosaicWindow
                 path={path}
                 title={(<Toolbar id={id} title={tab?.title ?? tab?.url} />) as unknown as string}
                 toolbarControls={<></>}
                 onDragStart={() => {
-                  console.log('Deactivate webview pointer')
-                  setIsClickable(false)
+                  console.log('Deactivate webview pointer');
+                  setIsClickable(false);
                 }}
                 onDragEnd={() => {
-                  console.log('Reactivate webview pointer')
-                  setIsClickable(true)
+                  console.log('Reactivate webview pointer');
+                  setIsClickable(true);
                 }}
               >
                 <div
@@ -62,13 +62,13 @@ export const MosaicViewComponent = (props: MosaicViewProps): JSX.Element => {
                   <WebViewPortal isVisible={true} id={id} isClickable={isClickable} />
                 </div>
               </MosaicWindow>
-            )
+            );
           }}
         />
       ))}
     </>
-  )
-}
+  );
+};
 
 // Wrap in memo to prevent unnecessary re-renders
-export const MosaicView = memo(MosaicViewComponent)
+export const MosaicView = memo(MosaicViewComponent);

@@ -34,7 +34,7 @@ interface SidebarProps {
 }
 
 export function AppSidebar(props: SidebarProps) {
-  const { currentTab, currentTabId } = props
+  const { currentTab } = props
   const { isPinned, isOpen, setOpen } = useSidebarStore()
   const [canGoBack, setCanGoBack] = useState(false)
   const [canGoForward, setCanGoForward] = useState(false)

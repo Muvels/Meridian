@@ -1,6 +1,7 @@
-import { useSidebarStore } from '@renderer/store/sidebar';
 import clsx from 'clsx';
 import React, { ReactNode } from 'react';
+
+import { useSidebarStore } from '@renderer/store/sidebar';
 
 interface NativeControlsProps {
   children?: ReactNode; // `children` can be any valid React node

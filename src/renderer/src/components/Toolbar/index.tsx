@@ -1,6 +1,7 @@
-import { useTabs } from '@renderer/hooks/use-tabs';
 import { X, Info, ArrowLeft, ArrowRight, RefreshCcw } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+
+import { useTabs } from '@renderer/hooks/use-tabs';
 
 interface ToolbarProps {
   id: string;
@@ -11,21 +12,19 @@ export const Toolbar = ({ id, title }: ToolbarProps): JSX.Element => {
   const [canGoBack, setCanGoBack] = useState(false);
   const [canGoForward, setCanGoForward] = useState(false);
   const { getTab } = useTabs();
+  const webviewRef = useRef<Electron.WebviewTag | null>(getTab(id));
 
-  const webviewRef = useRef<Electron.WebviewTag>(getTab(id));
-
-  webviewRef.current = getTab(id)!;
   useEffect(() => {
     webviewRef.current = getTab(id)!;
 
-    const updateNavButtons = () => {
-      if (webviewRef) {
+    const updateNavButtons = (): void => {
+      if (webviewRef && webviewRef.current) {
         setCanGoBack(webviewRef.current.canGoBack());
         setCanGoForward(webviewRef.current.canGoForward());
       }
     };
 
-    const handleDomReady = () => updateNavButtons();
+    const handleDomReady = (): void => updateNavButtons();
 
     if (webviewRef.current) {
       webviewRef.current.addEventListener('dom-ready', handleDomReady);
@@ -40,17 +39,17 @@ export const Toolbar = ({ id, title }: ToolbarProps): JSX.Element => {
         webviewRef.current.removeEventListener('did-navigate-in-page', updateNavButtons);
       }
     };
-  }, [webviewRef, webviewRef.current]);
+  }, [getTab, id, webviewRef]);
 
-  const handleReload = () => {
+  const handleReload = (): void => {
     webviewRef?.current?.reload();
   };
 
-  const handleUndo = () => {
+  const handleUndo = (): void => {
     webviewRef?.current?.goBack();
   };
 
-  const handleRedo = () => {
+  const handleRedo = (): void => {
     webviewRef?.current?.goForward();
   };
 

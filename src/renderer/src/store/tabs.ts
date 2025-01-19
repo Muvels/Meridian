@@ -47,7 +47,7 @@ interface TabGroupStore {
   activeTabGroup: string | null;
   addTabGroup: () => void;
   setActiveTabGroup: (tabGroup: TabGroup) => void;
-  getTabGroupById: (tabGroupId: string) => TabGroup | null;
+  getTabGroupById: (tabGroupId: string | null) => TabGroup | null;
   updateTabUrl: (tabGroup: TabGroup, tab: Tab, url: string) => void;
   updateTabTitle: (tabGroup: TabGroup, tab: Tab, title: string) => void;
   updatedLayout: (newLayout: MosaicNode<string>, pActiveTabGroup?: TabGroup) => void;
@@ -92,7 +92,7 @@ export const useTabGroupStore = create<TabGroupStore>((set, get) => ({
   setActiveTab: (newActiveTabId: string, pActiveTabGroup?: TabGroup): void => {
     if (newActiveTabId === useTabGroupStore.getState().activeTabGroup) return;
     set((state) => {
-      const activeTabGroup = pActiveTabGroup ?? state.getTabGroupById(state.activeTabGroup);
+      const activeTabGroup = pActiveTabGroup ?? state.getTabGroupById(state.activeTabGroup ?? '');
       return {
         //...state
         tabGroups: state.tabGroups.map((group) =>
@@ -132,7 +132,7 @@ export const useTabGroupStore = create<TabGroupStore>((set, get) => ({
     })),
   updatedLayout: (newLayout: MosaicNode<string>, pActiveTabGroup?: TabGroup): void => {
     set((state) => {
-      const activeTabGroup = pActiveTabGroup ?? state.getTabGroupById(state.activeTabGroup);
+      const activeTabGroup = pActiveTabGroup ?? state.getTabGroupById(state.activeTabGroup ?? '');
       return {
         tabGroups: state.tabGroups.map((group) =>
           group.id === activeTabGroup?.id
@@ -149,7 +149,8 @@ export const useTabGroupStore = create<TabGroupStore>((set, get) => ({
     set(() => ({
       tabGroups: newTabGroups // Replace the array with a reordered one
     })),
-  getTabGroupById: (tabGroupId: string): TabGroup | null => {
+  getTabGroupById: (tabGroupId): TabGroup | null => {
+    if (!tabGroupId) return null;
     const { tabGroups } = get(); // Access the current state
     return tabGroups.find((group) => group.id === tabGroupId) || null;
   },
@@ -235,79 +236,6 @@ export const useTabGroupStore = create<TabGroupStore>((set, get) => ({
   }
 }));
 
-// class Tab {
-//   private id: string
-//   private url: string
-//   private icon: string | null
-//   private title: string | null
-
-//   constructor() {
-//     const id = uuid()
-//     this.id = id
-//     this.url = 'https://google.com'
-//     this.icon = null
-//     this.title = null
-//   }
-
-//   public getTitle(): string | null {
-//     return this.title
-//   }
-
-//   public setTitle(title: string): void {
-//     this.title = title
-//   }
-
-//   public getUrl(): string | null {
-//     return this.url
-//   }
-
-//   public setUrl(url: string): void {
-//     this.url = url
-//   }
-
-//   public getId(): string {
-//     return this.id
-//   }
-// }
-
-// export const useTabStore = create<TabStore>((set) => ({
-//   addTab: () => {
-//     const id = uuid()
-//     const newTab = {
-//       id,
-//       url: 'https://google.com',
-//       map: { id: id, new: 'New Window' },
-//       tree: id
-//     }
-//     set(() => {
-//       useLayoutStore.getState().setDefaulTree(id)
-//       return {
-//         tab: newTab,
-//         activeTab: newTab.id
-//       }
-//     })
-//     return newTab
-//   },
-//   closeTab: (id: string) =>
-//     set((state) => {
-//       const remainingTabs = state.tabs.filter((tab) => tab.id !== id)
-//       return {
-//         tabs: remainingTabs,
-//         activeTab: remainingTabs.length > 0 ? remainingTabs[0].id : null
-//       }
-//     }),
-//   setActiveTab: (id: string) => {
-//     set({ activeTab: id })
-//   },
-//   updateTabUrl: (id: string, url: string) =>
-//     set((state) => ({
-//       tabs: state.tabs.map((tab) => (tab.id === id ? { ...tab, url } : tab))
-//     })),
-//   updateTabTitle: (id: string, title: string) =>
-//     set((state) => ({
-//       tabs: state.tabs.map((tab) => (tab.id === id ? { ...tab, title } : tab))
-//     }))
-// }))
 export default useTabGroupStore;
 if (typeof window !== 'undefined') {
   (

@@ -1,6 +1,7 @@
 // WebViewPortal.tsx
-import { useWebview } from '@renderer/contexts/WebviewContext';
 import { useRef, useEffect } from 'react';
+
+import { useWebview } from '@renderer/contexts/WebviewContext';
 import useTabGroupStore from '@renderer/store/tabs';
 
 /**
@@ -21,7 +22,6 @@ export function WebViewPortal({
   const activeTabGroup = getTabGroupById(activeTabGroupId);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const webviewRef = useRef<Electron.WebviewTag | null>(null);
-  console.log('ID', id);
 
   useEffect(() => {
     // If we haven't created the container yet, do it once.
@@ -33,7 +33,7 @@ export function WebViewPortal({
       }
 
       const handleFocus = (): void => {
-        console.log('Webview gained focus:', id);
+        if (!activeTabGroup) return;
         setActiveTab(id, activeTabGroup); // Update active tab in store
       };
 
@@ -76,10 +76,9 @@ export function WebViewPortal({
       //   containerRef.current = null;
       // }
     };
-  }, [isVisible, activeTabGroup, id, setActiveTab]);
+  }, [isVisible, activeTabGroup, id, setActiveTab, registerWebviewRef]);
 
   useEffect(() => {
-    console.log('Disable clickable?', !!webviewRef.current, isClickable);
     if (webviewRef.current) {
       webviewRef.current.style.pointerEvents = isClickable ? 'auto' : 'none';
     }

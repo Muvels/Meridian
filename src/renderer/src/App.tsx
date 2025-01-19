@@ -1,20 +1,21 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useSidebarStore } from 'src/store/sidebar';
 import clsx from 'clsx';
+import { MosaicNode } from 'react-mosaic-component';
+
+import { useSidebarStore } from '@renderer/store/sidebar';
 
 import AddressBar from './components/AddressBar';
 import { SidebarProvider } from './components/ui/sidebar';
 import { AppSidebar } from './components/Sidebar';
 import { Drawer, DrawerContent, DrawerFooter } from './components/ui/drawer';
+import { useTabGroupStore } from './store/tabs';
+import { useTabs } from './hooks/use-tabs';
+import { MosaicView } from './components/Tiling/MosaicView';
+import { webviewDebugger } from './lib/helper';
 import '@blueprintjs/core/lib/css/blueprint.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import 'react-mosaic-component/react-mosaic-component.css';
 import './assets/styles.css';
-
-import { useTabGroupStore } from './store/tabs';
-import { useTabs } from './hooks/use-tabs';
-import { useLayoutStore } from './store/layout';
-import { MosaicView } from './components/Tiling/MosaicView';
 
 function App(): JSX.Element {
   // const { updateTabTitle, updateTabFavicon, updateTabUrl } = useTabStore()
@@ -27,103 +28,64 @@ function App(): JSX.Element {
     getTabGroupById
   } = useTabGroupStore();
   const { isPinned, setOpen, isOpen } = useSidebarStore();
-  // const tabs = useTabStore((state) => state.tabs) // Subscribe directly
-  // const activeTab = useTabStore((state) => state.activeTab)
-  const layout = useLayoutStore((state) => state.tree); // Your store state
   const { getTab } = useTabs();
   const [isClickable, setIsClickable] = useState(true);
-
   const activeTabGroup = getTabGroupById(activeTabGroupId);
-
   const webviewRef = useRef<Electron.WebviewTag | null>(null);
 
-  // const activeTabUrl = tabs.find((tab) => tab.id === activeTab)?.url || ''
-
+  // eslint-disable-next-line react-compiler/react-compiler
   webviewRef.current = getTab(activeTabGroup?.active.id);
 
   useEffect(() => {
-    console.log('activeTabGroup===', activeTabGroup);
-    webviewRef.current = getTab();
-
-    if (!window.electron) {
-      console.error('❌ Electron is not available');
-    } else {
-      console.log('✅ Electron is available');
-    }
-
-    if (!webviewRef) {
-      console.error('❌ webviewRef is not defined');
-    } else {
-      console.log('✅ webviewRef is defined:', webviewRef);
-    }
-
-    if (!webviewRef?.current) {
-      console.error('❌ webviewRef.current is not set');
-    } else {
-      console.log('✅ webviewRef.current is set:', webviewRef.current);
-    }
-
-    if (window.electron && webviewRef && webviewRef.current) {
-      console.log('🎉 All conditions are met!');
-    }
-
+    webviewRef.current = getTab(activeTabGroup?.active.id);
+    webviewDebugger(window, webviewRef);
     if (window.electron && webviewRef && webviewRef.current) {
       const webview = webviewRef.current;
-
-      const handleUrlChange = (event, newUrl) => {
+      const handleUrlChange = (_event, newUrl: string): void => {
         if (activeTabGroup && newUrl) {
-          console.log('TABURL CHNAGES INTIATED');
           updateTabUrl(activeTabGroup, activeTabGroup?.active, newUrl);
         }
       };
-
-      const handleTitleChange = (event, newTitle) => {
+      const handleTitleChange = (_event, newTitle: string): void => {
         if (activeTabGroup && activeTabGroup.active && newTitle) {
           updateTabTitle(activeTabGroup, activeTabGroup.active, newTitle);
-          // updateTabTitle(activeTab, newTitle) // Correctly update only the active tab
         }
       };
-
-      const handleIconChange = (event, newIcons) => {
-        if (false && newIcons) {
-          const [faviconUrl] = event.favicons; // Electron returns an array
-          // updateTabFavicon(activeTab, faviconUrl) // Correctly update only the active tab
-        }
-      };
+      const handleIconChange = (_event, _newIcons): void => {};
 
       // Attach listeners when the active tab changes
       webview.addEventListener('did-navigate', (event) => {
         handleUrlChange(event, webview.getURL());
       });
-
       webview.addEventListener('page-title-updated', (event) => {
         handleTitleChange(event, webview.getTitle());
       });
-
       webview.addEventListener('page-favicon-updated', (event) => {
         handleIconChange(event, event.favicons);
       });
 
       // Cleanup previous listeners when tab changes
       return () => {
-        webview.removeEventListener('did-navigate', handleUrlChange);
-        webview.removeEventListener('page-title-updated', handleTitleChange);
-        webview.removeEventListener('page-favicon-updated', handleIconChange);
+        webview.removeEventListener('did-navigate', handleUrlChange as EventListener);
+        webview.removeEventListener('page-title-updated', handleTitleChange as EventListener);
+        webview.removeEventListener('page-favicon-updated', handleIconChange as EventListener);
       };
     }
-  }, [activeTabGroupId, tabGroups, updateTabTitle, updateTabUrl]);
+
+    // Return a no-op cleanup function for other cases
+    return () => {};
+  }, [activeTabGroup, activeTabGroupId, getTab, tabGroups, updateTabTitle, updateTabUrl]);
 
   const handleUpdatedLayout = useCallback(
-    (newNode) => {
+    (newNode: MosaicNode<string>) => {
       updatedLayout(newNode);
     },
     [updatedLayout]
   );
 
-  console.log('TABS: ', tabGroups);
   return (
     <>
-      <div
+      <button
         hidden={isPinned}
         onMouseEnter={() => setOpen(true)}
         onClick={() => setOpen(true)}
@@ -136,16 +98,13 @@ function App(): JSX.Element {
       />
       <Drawer>
         <DrawerContent id="no-drag" className="bg-default">
-          <AddressBar url={activeTabGroup?.active.url} />
+          <AddressBar url={activeTabGroup?.active.url ?? ''} />
 
           <DrawerFooter></DrawerFooter>
         </DrawerContent>
 
         <SidebarProvider>
-          <AppSidebar
-            currentTab={activeTabGroup?.active.url}
-            currentTabId={activeTabGroup?.active.id}
-          />
+          <AppSidebar currentTab={activeTabGroup?.active.url ?? ''} />
           <div
             id="drag"
             className={clsx(

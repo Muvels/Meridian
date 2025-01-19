@@ -6,16 +6,19 @@ interface WebviewContextType {
   registerWebviewRef: (tabId: string, ref: Electron.WebviewTag) => void;
 }
 
+type WebviewRefsType = {
+  [tabId: string]: Electron.WebviewTag;
+};
+
 export const WebviewContext = createContext({} as WebviewContextType);
 
-export function WebviewProvider({ children }) {
-  const webviewRefs = useRef({});
+export function WebviewProvider({ children }): JSX.Element {
+  const webviewRefs = useRef<WebviewRefsType>({});
 
-  const getWebviewRef = (tabId) => webviewRefs.current[tabId];
+  const getWebviewRef = (tabId: string): Electron.WebviewTag => webviewRefs.current[tabId];
 
-  const registerWebviewRef = (tabId, ref) => {
+  const registerWebviewRef = (tabId: string, ref: Electron.WebviewTag): void => {
     webviewRefs.current[tabId] = ref;
-    console.log('All refs', webviewRefs);
   };
 
   return (
@@ -25,4 +28,4 @@ export function WebviewProvider({ children }) {
   );
 }
 
-export const useWebview = () => useContext(WebviewContext);
+export const useWebview = (): WebviewContextType => useContext(WebviewContext);

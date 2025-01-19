@@ -1,14 +1,15 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import React, { FC, useEffect } from 'react';
-import { Tab, TabGroup } from '@renderer/store/tabs';
 import { ChevronsUpDown, Folders } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@radix-ui/react-collapsible';
 import clsx from 'clsx';
 
+import { Tab, TabGroup } from '@renderer/store/tabs';
+
 interface TabGroupItemProps {
   setActiveTabGroup: (tabGroup: TabGroup) => void;
-  activeTabGroup: TabGroup;
+  activeTabGroup: TabGroup | null;
   tabGroup: TabGroup;
   tab: Tab;
 }
@@ -21,7 +22,7 @@ const TabGroupItem: FC<TabGroupItemProps> = ({ setActiveTabGroup, tabGroup, acti
     id: tabGroup.id
   });
 
-  const handleMouseDown = () => {
+  const handleMouseDown = (): void => {
     clickTimeout = setTimeout(() => {
       clickTimeout = null;
     }, 200); // Define a threshold for drag vs click
@@ -31,20 +32,22 @@ const TabGroupItem: FC<TabGroupItemProps> = ({ setActiveTabGroup, tabGroup, acti
     if (clickTimeout) {
       clearTimeout(clickTimeout);
       clickTimeout = null;
-      console.log('Clicked the command with function', executeFunction);
       executeFunction();
     }
   };
 
   useEffect(() => {
+    if (!activeTabGroup) return;
     activeTabGroup.id !== tabGroup.id && setIsOpen(false);
-  }, [activeTabGroup]);
+  }, [activeTabGroup, tabGroup.id]);
 
   return (
     <div
       ref={setNodeRef}
       {...attributes}
       {...listeners}
+      role="button"
+      tabIndex={0}
       style={{
         transform: CSS.Transform.toString(transform),
         transition: transition || 'none',

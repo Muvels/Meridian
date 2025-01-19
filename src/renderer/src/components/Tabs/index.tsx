@@ -1,14 +1,10 @@
 import React from 'react';
-import { useTabGroupStore } from '@renderer/store/tabs';
 import { Plus } from 'lucide-react';
-import { useLayoutStore } from '@renderer/store/layout';
+// eslint-disable-next-line import/named
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext } from '@dnd-kit/sortable';
 
-import { DrawerTrigger } from '../ui/drawer';
-
-import TabGroupItem from './TabGroupItem';
-
+import { useTabGroupStore } from '@renderer/store/tabs';
 import {
   ContextMenu,
   ContextMenuContent,
@@ -17,14 +13,11 @@ import {
   ContextMenuTrigger
 } from '@/components/ui/context-menu';
 
-const Tabs: React.FC = () => {
-  // Subscribe to specific parts of Zustand state like Redux
-  // const tabs = useTabStore((state) => state.tabs)
-  // const activeTab = useTabStore((state) => state.activeTab)
-  // const { addTab, setActiveTab } = useTabStore()
-  const { tree, setDefaulTree, switchTree, splitVertically, isTabVisible, splitHorizontally } =
-    useLayoutStore();
+import { DrawerTrigger } from '../ui/drawer';
 
+import TabGroupItem from './TabGroupItem';
+
+const Tabs: React.FC = () => {
   const {
     activeTabGroup: activeTabGroupId,
     addTabGroup,
@@ -38,10 +31,8 @@ const Tabs: React.FC = () => {
   const activeTabGroup = getTabGroupById(activeTabGroupId);
 
   // const closeTab = useTabStore((state) => state.closeTab)
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = (event: DragEndEvent): void => {
     const { active, over } = event;
-    console.log('Active ID:', active.id);
-    console.log('Over ID:', over?.id);
 
     if (!over || active.id === over.id) return;
 
@@ -50,7 +41,6 @@ const Tabs: React.FC = () => {
 
     if (oldIndex !== -1 && newIndex !== -1) {
       const newTabGroups = arrayMove(tabGroups, oldIndex, newIndex);
-      console.log('New Order:', newTabGroups);
       updateTabGroupOrder(newTabGroups);
     }
   };

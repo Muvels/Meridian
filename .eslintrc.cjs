@@ -29,8 +29,7 @@ module.exports = {
     ecmaFeatures: {
       jsx: true
     },
-    project: './tsconfig.eslint.json',
-    tsconfigRootDir: __dirname
+    project: './tsconfig.web.json'
   },
   env: {
     browser: true,
@@ -92,7 +91,10 @@ module.exports = {
       node: {
         extensions: ['.js', '.jsx', '.ts', '.tsx']
       },
-      typescript: {} // Resolve TypeScript paths
+      typescript: {
+        alwaysTryTypes: true,
+        project: './tsconfig.web.json'
+      }
     }
   }
 };

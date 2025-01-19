@@ -1,7 +1,8 @@
 // MosaicView.tsx
 import { memo } from 'react';
-import { Mosaic, MosaicWindow } from 'react-mosaic-component';
+import { Mosaic, MosaicNode, MosaicWindow } from 'react-mosaic-component';
 import clsx from 'clsx';
+
 import { TabGroup } from '@renderer/store/tabs';
 
 import { Toolbar } from '../../components/Toolbar';
@@ -9,9 +10,9 @@ import { WebViewPortal } from '../../components/Webview/portal';
 
 interface MosaicViewProps {
   tabGroups: TabGroup[];
-  activeTabGroupId: string;
+  activeTabGroupId: string | null;
   isClickable: boolean;
-  updatedLayout: (newNode: any) => void;
+  updatedLayout: (newNode: MosaicNode<string>) => void;
   setIsClickable: (val: boolean) => void;
 }
 
@@ -35,7 +36,6 @@ export const MosaicViewComponent = (props: MosaicViewProps): JSX.Element => {
             setIsClickable(false);
           }}
           onRelease={(newNode) => {
-            console.log('Layout change completed', newNode);
             newNode && updatedLayout(newNode);
             setIsClickable(true);
           }}
@@ -47,11 +47,9 @@ export const MosaicViewComponent = (props: MosaicViewProps): JSX.Element => {
                 title={(<Toolbar id={id} title={tab?.title ?? tab?.url} />) as unknown as string}
                 toolbarControls={<></>}
                 onDragStart={() => {
-                  console.log('Deactivate webview pointer');
                   setIsClickable(false);
                 }}
                 onDragEnd={() => {
-                  console.log('Reactivate webview pointer');
                   setIsClickable(true);
                 }}
               >

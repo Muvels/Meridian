@@ -1,4 +1,4 @@
-import { MutableRefObject, useEffect, useRef, useState } from 'react'
+import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react'
 import AddressBar from './components/AddressBar'
 import { SidebarProvider } from './components/ui/sidebar'
 import { AppSidebar } from './components/Sidebar'
@@ -23,6 +23,7 @@ import { useLayoutStore } from './store/layout'
 import TilingRenderer from './components/Tiling/TilingRenderer'
 import { WebViewPortal } from './components/Webview/portal'
 import { Toolbar } from './components/Toolbar'
+import { MosaicView } from './components/Tiling/MosaicView'
 
 function App(): JSX.Element {
   // const { updateTabTitle, updateTabFavicon, updateTabUrl } = useTabStore()
@@ -123,6 +124,12 @@ function App(): JSX.Element {
     }
   }, [activeTabGroupId, tabGroups, updateTabTitle, updateTabUrl])
 
+  const handleUpdatedLayout = useCallback((newNode) => {
+      updatedLayout(newNode)
+    },
+    [updatedLayout]
+  )
+
   console.log('TABS: ', tabGroups)
   return (
     <>
@@ -161,55 +168,13 @@ function App(): JSX.Element {
               {activeTabGroup ? (
                 <div>
                   <div className={`w-full h-[calc(100vh-1*1rem)] flex justify-center items-center`}>
-                    {tabGroups.map((tabGroup) => (
-                      <Mosaic
-                        key={tabGroup.id}
-                        className={clsx(
-                          '',
-                          activeTabGroup.id === tabGroup.id ? '' : 'hidden',
-                          typeof activeTabGroup.layout === 'string' && 'hide-toolbar'
-                        )}
-                        renderTile={(id: string, path: MosaicBranch[]) => {
-                          const tab = tabGroup.tabs.find((t) => t.id === id)
-                          return (
-                            <MosaicWindow
-                              path={path}
-                              title={tab?.title ?? 'Tab is undefined'}
-                              toolbarControls={<Toolbar id={id} />}
-                              onDragStart={() => {
-                                console.log("Here we deactivate the clickable webview")
-                                setIsClickable(false)
-                              }}
-                              onDragEnd={() => {
-                                console.log("Here we active the clickable webview again")
-                                setIsClickable(true)
-                              }}
-                            >
-                              <div
-                                id={`webview-portal-root${id}`}
-                                style={{
-                                  width: '100%',
-                                  height: '100%',
-                                  position: 'relative',
-                                }}
-                              >
-                                <WebViewPortal isVisible={true} id={id} isClickable={isClickable} />
-                              </div>
-                            </MosaicWindow>
-                          )
-                        }}
-                        initialValue={tabGroup.layout}
-                        onChange={(newNode) => {
-                          setIsClickable(false)
-
-                        }}
-                        onRelease={(newNode) => {
-                          console.log("Layout change completed", newNode)
-                          newNode && updatedLayout(newNode)
-                          setIsClickable(true)
-                        }}
-                      />
-                    ))}
+                    <MosaicView
+                      tabGroups={tabGroups}
+                      activeTabGroupId={activeTabGroupId}
+                      isClickable={isClickable}
+                      updatedLayout={handleUpdatedLayout}
+                      setIsClickable={setIsClickable}
+                    />
                   </div>
                 </div>
               ) : (

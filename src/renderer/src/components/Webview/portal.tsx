@@ -55,6 +55,8 @@ export function WebViewPortal({
       // webviewEl.setAttribute('allowpopups', 'true');
       webviewEl.style.width = '100%'
       webviewEl.style.height = '100%'
+      webviewEl.allowpopups = true
+      webviewEl.webpreferences = 'sandbox'
 
       webviewEl.addEventListener('focus', handleFocus)
 

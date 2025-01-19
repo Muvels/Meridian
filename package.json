@@ -25,6 +25,8 @@
   "dependencies": {
     "@blueprintjs/core": "^5.16.4",
     "@blueprintjs/icons": "^5.17.1",
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
     "@electron-toolkit/preload": "^3.0.0",
     "@electron-toolkit/utils": "^3.0.0",
     "@radix-ui/react-context-menu": "^2.2.3",
@@ -38,6 +40,7 @@
     "cmdk": "^1.0.0",
     "lucide-react": "^0.468.0",
     "react-compiler-runtime": "^19.0.0-beta-37ed2a7-20241206",
+    "react-hotkeys-hook": "^4.6.1",
     "react-mosaic-component": "^6.1.1",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",

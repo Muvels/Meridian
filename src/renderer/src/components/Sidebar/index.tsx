@@ -101,7 +101,7 @@ export function AppSidebar(props: SidebarProps) {
     >
       <SidebarContent id="no-drag" className="bg-default border-none box-border">
         <div className="w-full h-10" id="placeholder"></div>
-        <Button className="bg-[#b39e55] border-none mx-2">
+        <Button className="bg-[#b39e55] border-none mx-2 z-10">
           <div className="flex justify-between items-center w-full">
             <Search className="text-[#8a793f]" />
             <p
@@ -113,7 +113,6 @@ export function AppSidebar(props: SidebarProps) {
             >
               {currentTab ?? 'Suche nach etwas'}
             </p>
-            <RotateCcw className="text-[#8a793f]" onClick={handleReload} />
           </div>
         </Button>
         <div className="w-full flex justify-between items-center">
@@ -131,6 +130,9 @@ export function AppSidebar(props: SidebarProps) {
           >
             <Redo2 />
           </Button>
+          <Button className="bg-transparent border-none shadow-none w-1/2" onClick={handleReload}>
+            <RotateCcw />
+          </Button>
         </div>
         <hr className="mx-2 text-[#8a793f]" />
         <SidebarGroup>
@@ -143,7 +145,9 @@ export function AppSidebar(props: SidebarProps) {
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
-            <Tabs />
+            <div className="max-h-[calc(100vh-11rem)] overflow-y-auto overflow-x-hidden tabs-scroll-container">
+              <Tabs />
+            </div>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

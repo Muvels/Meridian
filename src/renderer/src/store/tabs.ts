@@ -51,6 +51,7 @@ interface TabGroupStore {
   updateTabUrl: (tabGroup: TabGroup, tab: Tab, url: string) => void
   updateTabTitle: (tabGroup: TabGroup, tab: Tab, title: string) => void
   updatedLayout: (newLayout: MosaicNode<string>, pActiveTabGroup?: TabGroup) => void
+  updateTabGroupOrder: (newTabGroups: TabGroup[]) => void
   setActiveTab: (newActiveTabId: string, pActiveTabGroup?: TabGroup) => void
   layout: {
     split: {
@@ -142,6 +143,10 @@ export const useTabGroupStore = create<TabGroupStore>((set, get) => ({
       }
     })
   },
+  updateTabGroupOrder: (newTabGroups: TabGroup[]): void =>
+    set(() => ({
+      tabGroups: newTabGroups, // Replace the array with a reordered one
+    })),
   getTabGroupById: (tabGroupId: string): TabGroup | null => {
     const { tabGroups } = get() // Access the current state
     return tabGroups.find((group) => group.id === tabGroupId) || null

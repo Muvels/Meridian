@@ -141,6 +141,19 @@
     border: 1px solid #ccc; /* Optional for visualization */
     background: white;
   }
+
+  .tabs-scroll-container::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+  }
+  
+  .tabs-scroll-container::-webkit-scrollbar-track {
+    background: transparent; /* Transparent background for the track */
+  }
+  
+  .tabs-scroll-container::-webkit-scrollbar-thumb {
+    background-color: #ccc; /* Color of the scrollbar thumb */
+    border-radius: 0; /* Rounded corners for the thumb */
+  }
 }
 
 /* ensure that the toolbar is hidden only when the hide-toolbar class is present on the .mosaic-window element */

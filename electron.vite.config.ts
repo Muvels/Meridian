@@ -25,13 +25,7 @@ export default defineConfig({
         src: resolve(__dirname, 'src/renderer/src')
       }
     },
-    plugins: [
-      react({
-        babel: {
-          plugins: [['babel-plugin-react-compiler', { target: '18' }]]
-        }
-      })
-    ],
+    plugins: [react()],
     css: {
       postcss: {
         plugins: [tailwindcss()]

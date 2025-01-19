@@ -1,58 +1,55 @@
-import { MutableRefObject, useEffect, useRef, useState } from 'react'
-import AddressBar from './components/AddressBar'
-import { SidebarProvider } from './components/ui/sidebar'
-import { AppSidebar } from './components/Sidebar'
-import { Drawer, DrawerContent, DrawerFooter } from './components/ui/drawer'
-import {
-  Mosaic,
-  MosaicBranch,
-  MosaicWindow,
-  getNodeAtPath,
-  updateTree
-} from 'react-mosaic-component'
-import '@blueprintjs/core/lib/css/blueprint.css'
-import '@blueprintjs/icons/lib/css/blueprint-icons.css'
-import 'react-mosaic-component/react-mosaic-component.css'
+import { MutableRefObject, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import './assets/styles.css'
+import AddressBar from './components/AddressBar'
+import useWindowsDimensions from './hooks/useWindowsDimensions'
+import Splash from './components/Splash'
+import { SidebarProvider, SidebarTrigger } from './components/ui/sidebar'
+import { AppSidebar } from './components/Sidebar'
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle
+} from './components/ui/drawer'
+import { Button } from './components/ui/button'
 
-import { useTabGroupStore } from './store/tabs'
+import { Calculator, Calendar, CreditCard, Settings, Smile, User } from 'lucide-react'
+
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut
+} from '@/components/ui/command'
+import useTabStore from './store'
+import Webview from './components/Webview'
 import { useTabs } from './hooks/use-tabs'
 import { useSidebarStore } from 'src/store/sidebar'
 import clsx from 'clsx'
-import { useLayoutStore } from './store/layout'
-import TilingRenderer from './components/Tiling/TilingRenderer'
-import { WebViewPortal } from './components/Webview/portal'
-import { Toolbar } from './components/Toolbar'
 
 function App(): JSX.Element {
-  // const { updateTabTitle, updateTabFavicon, updateTabUrl } = useTabStore()
-  const {
-    tabGroups,
-    activeTabGroup: activeTabGroupId,
-    updateTabTitle,
-    updateTabUrl,
-    updatedLayout,
-    getTabGroupById
-  } = useTabGroupStore()
+  const { updateTabTitle, updateTabFavicon, updateTabUrl } = useTabStore()
   const { isPinned, setOpen, isOpen } = useSidebarStore()
-  // const tabs = useTabStore((state) => state.tabs) // Subscribe directly
-  // const activeTab = useTabStore((state) => state.activeTab)
-  const layout = useLayoutStore((state) => state.tree) // Your store state
+  const tabs = useTabStore((state) => state.tabs) // Subscribe directly
+  const activeTab = useTabStore((state) => state.activeTab)
   const { getTab } = useTabs()
-  const [isClickable, setIsClickable] = useState(true)
-
-  const activeTabGroup = getTabGroupById(activeTabGroupId!)
 
   const webviewRef = useRef<Electron.WebviewTag | null>(
     null
   ) as MutableRefObject<Electron.WebviewTag | null>
 
-  // const activeTabUrl = tabs.find((tab) => tab.id === activeTab)?.url || ''
+  webviewRef.current = getTab()
 
-  webviewRef.current = getTab(activeTabGroup?.active.id)
+  const activeTabUrl = tabs.find((tab) => tab.id === activeTab)?.url || ''
 
   useEffect(() => {
-    console.log('activeTabGroup===', activeTabGroup)
     webviewRef.current = getTab()
 
     if (!window.electron) {
@@ -81,23 +78,21 @@ function App(): JSX.Element {
       const webview = webviewRef.current
 
       const handleUrlChange = (event, newUrl) => {
-        if (activeTabGroup && newUrl) {
-          console.log('TABURL CHNAGES INTIATED')
-          updateTabUrl(activeTabGroup, activeTabGroup?.active, newUrl)
+        if (activeTab && newUrl) {
+          updateTabUrl(activeTab, newUrl) // Correctly update only the active tab
         }
       }
 
       const handleTitleChange = (event, newTitle) => {
-        if (activeTabGroup && activeTabGroup.active && newTitle) {
-          updateTabTitle(activeTabGroup, activeTabGroup.active, newTitle)
-          // updateTabTitle(activeTab, newTitle) // Correctly update only the active tab
+        if (activeTab && newTitle) {
+          updateTabTitle(activeTab, newTitle) // Correctly update only the active tab
         }
       }
 
       const handleIconChange = (event, newIcons) => {
-        if (false && newIcons) {
+        if (activeTab && newIcons) {
           const [faviconUrl] = event.favicons // Electron returns an array
-          // updateTabFavicon(activeTab, faviconUrl) // Correctly update only the active tab
+          updateTabFavicon(activeTab, faviconUrl) // Correctly update only the active tab
         }
       }
 
@@ -121,99 +116,84 @@ function App(): JSX.Element {
         webview.removeEventListener('page-favicon-updated', handleIconChange)
       }
     }
-  }, [activeTabGroupId, tabGroups, updateTabTitle, updateTabUrl])
+  }, [activeTab, updateTabUrl, updateTabTitle])
 
-  console.log('TABS: ', tabGroups)
   return (
     <>
-      <div
+     <div
         hidden={isPinned}
         onMouseEnter={() => setOpen(true)}
-        onClick={() => setOpen(true)}
+        onClick={()=> setOpen(true)}
         className="absolute top-0 left-0 h-full w-10 z-50"
       />
-      <div
+        <div
         hidden={isPinned || !isOpen}
         onMouseEnter={() => setOpen(false)}
         className="absolute right-0 h-full w-4/5 z-50"
       />
       <Drawer>
         <DrawerContent id="no-drag" className="bg-default">
-          <AddressBar url={activeTabGroup?.active.url} />
+          <AddressBar url={activeTabUrl} />
 
           <DrawerFooter></DrawerFooter>
         </DrawerContent>
 
         <SidebarProvider>
-          <AppSidebar
-            currentTab={activeTabGroup?.active.url}
-            currentTabId={activeTabGroup?.active.id}
-          />
+          <AppSidebar currentTab={activeTabUrl} currentTabId={activeTab} />
           <div
             id="drag"
             className={clsx(
               'w-screen overflow-x-hidden',
-              !isPinned && 'absolute p-2',
+              !isPinned && 'absolute p-3',
               isPinned && 'py-3 pr-3'
             )}
           >
-            <div id="no-drag" className="rounded-lg overflow-hidden">
-              {activeTabGroup ? (
-                <div>
-                  <div className={`w-full h-[calc(100vh-1*1rem)] flex justify-center items-center`}>
-                    {tabGroups.map((tabGroup) => (
-                      <Mosaic
-                        key={tabGroup.id}
-                        className={clsx(
-                          '',
-                          activeTabGroup.id === tabGroup.id ? '' : 'hidden',
-                          typeof activeTabGroup.layout === 'string' && 'hide-toolbar'
-                        )}
-                        renderTile={(id: string, path: MosaicBranch[]) => {
-                          const tab = tabGroup.tabs.find((t) => t.id === id)
-                          return (
-                            <MosaicWindow
-                              path={path}
-                              title={tab?.title ?? 'Tab is undefined'}
-                              toolbarControls={<Toolbar id={id} />}
-                              onDragStart={() => {
-                                console.log("Here we deactivate the clickable webview")
-                                setIsClickable(false)
-                              }}
-                              onDragEnd={() => {
-                                console.log("Here we active the clickable webview again")
-                                setIsClickable(true)
-                              }}
-                            >
-                              <div
-                                id={`webview-portal-root${id}`}
-                                style={{
-                                  width: '100%',
-                                  height: '100%',
-                                  position: 'relative',
-                                }}
-                              >
-                                <WebViewPortal isVisible={true} id={id} isClickable={isClickable} />
-                              </div>
-                            </MosaicWindow>
-                          )
-                        }}
-                        initialValue={tabGroup.layout}
-                        onChange={(newNode) => {
-                          setIsClickable(false)
-
-                        }}
-                        onRelease={(newNode) => {
-                          console.log("Layout change completed", newNode)
-                          newNode && updatedLayout(newNode)
-                          setIsClickable(true)
-                        }}
-                      />
-                    ))}
-                  </div>
-                </div>
+            <div id="no-drag" className="rounded-lg overflow-hidden ">
+              {activeTabUrl ? (
+                tabs.map((tab) => (
+                  <Webview activeTab={activeTab} ref={webviewRef} tab={tab} key={tab.id} />
+                ))
               ) : (
-                <div className="bg-white w-full h-full flex justify-center items-center"></div>
+                <div className="bg-white w-full h-full flex justify-center items-center">
+                  <Command className="bg-white rounded-lg border shadow-md md:min-w-[450px]">
+                    <CommandInput placeholder="Type a command or search..." />
+                    <CommandList>
+                      <CommandEmpty>No results found.</CommandEmpty>
+                      <CommandGroup heading="Suggestions">
+                        <CommandItem>
+                          <Calendar />
+                          <span>Calendar</span>
+                        </CommandItem>
+                        <CommandItem>
+                          <Smile />
+                          <span>Search Emoji</span>
+                        </CommandItem>
+                        <CommandItem disabled>
+                          <Calculator />
+                          <span>Calculator</span>
+                        </CommandItem>
+                      </CommandGroup>
+                      <CommandSeparator />
+                      <CommandGroup heading="Settings">
+                        <CommandItem>
+                          <User />
+                          <span>Profile</span>
+                          <CommandShortcut>⌘P</CommandShortcut>
+                        </CommandItem>
+                        <CommandItem>
+                          <CreditCard />
+                          <span>Billing</span>
+                          <CommandShortcut>⌘B</CommandShortcut>
+                        </CommandItem>
+                        <CommandItem>
+                          <Settings />
+                          <span>Settings</span>
+                          <CommandShortcut>⌘S</CommandShortcut>
+                        </CommandItem>
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </div>
               )}
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { useTabGroupStore } from '@renderer/store/tabs'
+import useTabStore from '@renderer/store'
 import { useCallback } from 'react'
 import { useWebview } from 'src/contexts/WebviewContext'
 
@@ -8,15 +8,13 @@ interface useTabs {
 
 export const useTabs = (): useTabs => {
   const { getWebviewRef } = useWebview()
-  const { activeTabGroup: activeTabGroupId, getTabGroupById,tabGroups } = useTabGroupStore()
-  const activeTabGroup = getTabGroupById(activeTabGroupId)
+  const activeTab = useTabStore((state) => state.activeTab)
 
   const getTab = useCallback((): Electron.WebviewTag | null => {
-    console.log('activeTabGroup in useTabs ===', activeTabGroup)
-    const webviewRef = getWebviewRef(activeTabGroup?.active.id)
+    const webviewRef = getWebviewRef(activeTab)
     console.log('Retrieved WebviewRef:', webviewRef)
     return webviewRef
-  }, [activeTabGroupId, tabGroups])
+  }, [activeTab])
 
   return { getTab }
 }

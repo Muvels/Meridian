@@ -7,15 +7,38 @@ contextBridge.exposeInMainWorld('electron', {
 });
 
 // Custom APIs for renderer
-const api = {};
+const api = {
+  maximize: (): void => ipcRenderer.send('maximize'),
+  minimize: (): void => ipcRenderer.send('minimize'),
+  close: (): void => ipcRenderer.send('close'),
+  activeTab: {
+    ready: (wcId: number): void => ipcRenderer.send('webview-ready', wcId)
+  },
+  tab: {
+    onCreate: (callback) => ipcRenderer.on('create-tab', (_event, value) => callback(value)),
+    offCreate: () => {
+      ipcRenderer.removeAllListeners('create-tab');
+    },
+    onBlur: (callback) => ipcRenderer.on('blur-tab', (_event) => callback()),
+    offBlur: () => {
+      ipcRenderer.removeAllListeners('blur-tab');
+    }
+  },
+  store: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    get: (key): Promise<any> => ipcRenderer.invoke('store-get', key),
+    set: (key, value): void => ipcRenderer.send('store-set', key, value)
+  }
+};
 
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise
 // just add to the DOM global.
 if (process.contextIsolated) {
   try {
-    contextBridge.exposeInMainWorld('electron', electronAPI);
-    contextBridge.exposeInMainWorld('api', api);
+    contextBridge.exposeInMainWorld('electronApi', electronAPI);
+    contextBridge.exposeInMainWorld('nativeApi', api);
+    console.log('API successfully exposed to the main world.');
   } catch (error) {
     console.error(error);
   }

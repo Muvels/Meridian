@@ -11,14 +11,21 @@ import useTabGroupStore from '@renderer/store/tabs';
 export function WebViewPortal({
   isVisible,
   id,
-  isClickable
+  isClickable,
+  url
 }: {
   isVisible: boolean;
   id: string;
   isClickable: boolean;
+  url: string;
 }): JSX.Element | null {
   const { registerWebviewRef } = useWebview();
-  const { activeTabGroup: activeTabGroupId, getTabGroupById, setActiveTab } = useTabGroupStore();
+  const {
+    activeTabGroup: activeTabGroupId,
+    getTabGroupById,
+    setActiveTab,
+    addTabGroup
+  } = useTabGroupStore();
   const activeTabGroup = getTabGroupById(activeTabGroupId);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const webviewRef = useRef<Electron.WebviewTag | null>(null);
@@ -36,6 +43,9 @@ export function WebViewPortal({
         if (!activeTabGroup) return;
         setActiveTab(id, activeTabGroup); // Update active tab in store
       };
+      // const handleDomReady = (): void => {
+      //   window.nativeApi.activeTab.ready(webviewEl.getWebContentsId());
+      // };
 
       // Create a DIV to hold the <webview> inside the portal root
       const container = document.createElement('div');
@@ -50,15 +60,17 @@ export function WebViewPortal({
       const webviewEl = document.createElement('webview');
       webviewRef.current = webviewEl;
       registerWebviewRef(id, webviewRef.current);
-      webviewEl.src = 'https://google.com';
+      webviewEl.src = url;
       // Adjust any attributes you need, e.g.:
       // webviewEl.setAttribute('allowpopups', 'true');
       webviewEl.style.width = '100%';
       webviewEl.style.height = '100%';
       webviewEl.allowpopups = true;
       webviewEl.webpreferences = 'sandbox';
+      webviewEl.tabIndex = 0;
 
       webviewEl.addEventListener('focus', handleFocus);
+      // webviewEl.addEventListener('dom-ready', handleDomReady);
 
       // Append <webview> to the container
       container.appendChild(webviewEl);
@@ -76,7 +88,7 @@ export function WebViewPortal({
       //   containerRef.current = null;
       // }
     };
-  }, [isVisible, activeTabGroup, id, setActiveTab, registerWebviewRef]);
+  }, [isVisible, activeTabGroup, id, setActiveTab, registerWebviewRef, url]);
 
   useEffect(() => {
     if (webviewRef.current) {

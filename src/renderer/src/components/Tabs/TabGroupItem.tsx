@@ -6,6 +6,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@radix-ui/r
 import clsx from 'clsx';
 
 import { Tab, TabGroup } from '@renderer/store/tabs';
+import { useSettingsStore } from '@renderer/store/settings';
 
 interface TabGroupItemProps {
   setActiveTabGroup: (tabGroup: TabGroup) => void;
@@ -18,6 +19,7 @@ let clickTimeout: NodeJS.Timeout | null = null;
 
 const TabGroupItem: FC<TabGroupItemProps> = ({ setActiveTabGroup, tabGroup, activeTabGroup }) => {
   const [isOpen, setIsOpen] = React.useState(false);
+  const { backgroundColor } = useSettingsStore();
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: tabGroup.id
   });
@@ -67,23 +69,23 @@ const TabGroupItem: FC<TabGroupItemProps> = ({ setActiveTabGroup, tabGroup, acti
             activeTabGroup?.id === tabGroup.id ? 'bg-white text-black' : ''
           }`}
         >
-          <div className={clsx(`flex justify-between items-center`, isOpen && 'pb-2')}>
+          <div className={clsx(``, isOpen && 'pb-2')}>
             <div className="flex justify-center items-center gap-2 ">
-              <Folders width={20} />
-              <span className="truncate">{`${tabGroup.active.title} - Gruppe`}</span>
+              <Folders width={45} />
+              <span className="truncate w-full text-left">{`${tabGroup.active.title} - Gruppe`}</span>
+              <CollapsibleTrigger
+                asChild
+                onMouseDown={handleMouseDown}
+                onMouseUp={() => handleMouseUp(() => setIsOpen(!isOpen))}
+              >
+                <button className="z-30">
+                  <ChevronsUpDown className="h-4 w-4" />
+                  <span className="sr-only">Toggle</span>
+                </button>
+              </CollapsibleTrigger>
             </div>
-            <CollapsibleTrigger
-              asChild
-              onMouseDown={handleMouseDown}
-              onMouseUp={() => handleMouseUp(() => setIsOpen(!isOpen))}
-            >
-              <button className="z-30">
-                <ChevronsUpDown className="h-4 w-4" />
-                <span className="sr-only">Toggle</span>
-              </button>
-            </CollapsibleTrigger>
           </div>
-          <CollapsibleContent className="space-y-1 bg-default p-1 rounded-lg">
+          <CollapsibleContent style={{ backgroundColor }}className="space-y-1 p-1 rounded-lg">
             {tabGroup.tabs.map((tab) => (
               <div
                 key={tab.id}

@@ -29,7 +29,7 @@ module.exports = {
     ecmaFeatures: {
       jsx: true
     },
-    project: './tsconfig.web.json'
+    project: './tsconfig.eslint.json'
   },
   env: {
     browser: true,
@@ -72,7 +72,11 @@ module.exports = {
         ignoreRestSiblings: true,
         argsIgnorePattern: '^_' // Ignore variables starting with _
       }
-    ], // TypeScript-aware unused vars rule
+    ],
+    '@typescript-eslint/no-unsafe-assignment': 'off',
+    '@typescript-eslint/no-unsafe-call': 'off',
+    '@typescript-eslint/no-unsafe-member-access': 'off',
+    // TypeScript-aware unused vars rule
     'no-console': ['warn', { allow: ['warn', 'error'] }], // Warn on `console.log` but allow `console.warn` and `console.error`
     'no-debugger': 'error', // Disallow debugger statements
     'prefer-const': 'error', // Prefer `const` for variables that are never reassigned
@@ -93,7 +97,7 @@ module.exports = {
       },
       typescript: {
         alwaysTryTypes: true,
-        project: './tsconfig.web.json'
+        project: './tsconfig.eslint.json'
       }
     }
   }

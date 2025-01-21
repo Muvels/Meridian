@@ -1,8 +1,28 @@
-import { ElectronAPI } from '@electron-toolkit/preload';
+import { ElectronAPI, IpcRendererEvent } from '@electron-toolkit/preload';
+
+interface api {
+  maximize: () => void;
+  minimize: () => void;
+  close: () => void;
+  activeTab: {
+    ready: (wcId: number) => void;
+  };
+  tab: {
+    onCreate: (callback: (url: string) => void) => void;
+    offCreate: (callback: (url: string) => void) => void;
+    onBlur: (callback: () => void) => void;
+    offBlur: (callback: () => void) => void;
+  };
+  store: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    get: (key) => Promise<any>;
+    set: (key, value) => void;
+  };
+}
 
 declare global {
   interface Window {
-    electron: ElectronAPI;
-    api: unknown;
+    electronApi: ElectronAPI;
+    nativeApi: api;
   }
 }

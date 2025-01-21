@@ -1,13 +1,14 @@
 {
   "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
   "include": [
+    "src/shared/**/*",
     "src/renderer/src/env.d.ts",
     "src/renderer/src/**/*",
     "src/renderer/src/**/*.tsx",
     "src/preload/*.d.ts",
     "tailwind.config.js",
     ".eslintrc.cjs"
-  ],
+, "src/main/utils/settingsStore.ts"  ],
   "compilerOptions": {
     "composite": true,
     "jsx": "react-jsx",
@@ -17,7 +18,8 @@
         "src/renderer/src/*"
       ],
       "@/*": ["src/renderer/src/*"],
-      "src/*": ["src/renderer/src/*"]
+      "src/*": ["src/renderer/src/*"],
+      "shared/*": ["src/shared/*"]
 
     }
   }

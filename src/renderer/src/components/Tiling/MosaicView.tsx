@@ -57,7 +57,12 @@ export const MosaicViewComponent = (props: MosaicViewProps): JSX.Element => {
                   id={`webview-portal-root${id}`}
                   style={{ width: '100%', height: '100%', position: 'relative' }}
                 >
-                  <WebViewPortal isVisible={true} id={id} isClickable={isClickable} />
+                  <WebViewPortal
+                    isVisible={true}
+                    id={id}
+                    isClickable={isClickable}
+                    url={tab?.url ?? 'https://google.com'}
+                  />
                 </div>
               </MosaicWindow>
             );

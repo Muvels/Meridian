@@ -11,7 +11,8 @@ export default defineConfig({
       alias: {
         '@renderer': resolve('src/renderer/src'),
         '@': resolve(__dirname, 'src/renderer/src'),
-        src: resolve(__dirname, 'src/renderer/src')
+        src: resolve(__dirname, 'src/renderer/src'),
+        shared: resolve(__dirname, 'src/shared')
       }
     }
   },
@@ -23,7 +24,8 @@ export default defineConfig({
       alias: {
         '@renderer': resolve('src/renderer/src'),
         '@': resolve(__dirname, 'src/renderer/src'),
-        src: resolve(__dirname, 'src/renderer/src')
+        src: resolve(__dirname, 'src/renderer/src'),
+        shared: resolve(__dirname, 'src/shared')
       }
     },
     plugins: [

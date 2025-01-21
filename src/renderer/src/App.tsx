@@ -16,6 +16,9 @@ import '@blueprintjs/core/lib/css/blueprint.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import 'react-mosaic-component/react-mosaic-component.css';
 import './assets/styles.css';
+import Settings from './components/Settings';
+import { useSettingsStore } from './store/settings';
+import useHotkeys  from '@reecelucas/react-use-hotkeys';
 
 function App(): JSX.Element {
   // const { updateTabTitle, updateTabFavicon, updateTabUrl } = useTabStore()
@@ -25,22 +28,45 @@ function App(): JSX.Element {
     updateTabTitle,
     updateTabUrl,
     updatedLayout,
-    getTabGroupById
+    getTabGroupById,
+    addTabGroup,
+    layout
   } = useTabGroupStore();
-  const { isPinned, setOpen, isOpen } = useSidebarStore();
+  const { isPinned, setOpen, isOpen, isSettings, setPinned } = useSidebarStore();
+  const { backgroundColor, hotkeys } = useSettingsStore();
   const { getTab } = useTabs();
   const [isClickable, setIsClickable] = useState(true);
   const activeTabGroup = getTabGroupById(activeTabGroupId);
   const webviewRef = useRef<Electron.WebviewTag | null>(null);
 
+  useHotkeys(hotkeys.Controls.toggleSidebar, () => setPinned(!isPinned))
+  useHotkeys(hotkeys.Browser.reload, () => webviewRef.current?.reload())
+  useHotkeys(hotkeys.Browser.undo, () => webviewRef.current?.goBack())
+  useHotkeys(hotkeys.Browser.redo, () => webviewRef.current?.goForward())
+  useHotkeys(hotkeys.Split.horizontally, () => layout.split.horizontal())
+  useHotkeys(hotkeys.Split.vertically, () => layout.split.vertical())
+
+
+
   // eslint-disable-next-line react-compiler/react-compiler
   webviewRef.current = getTab(activeTabGroup?.active.id);
 
   useEffect(() => {
+    const handleCreate = (pUrl: string): void => {
+      addTabGroup(pUrl);
+    };
+    window.nativeApi.tab.onCreate(handleCreate);
+    return () => {
+      window.nativeApi.tab.offCreate(handleCreate);
+    };
+  }, [addTabGroup]);
+
+  useEffect(() => {
     webviewRef.current = getTab(activeTabGroup?.active.id);
     webviewDebugger(window, webviewRef);
-    if (window.electron && webviewRef && webviewRef.current) {
+    if (window.electronApi && webviewRef && webviewRef.current) {
       const webview = webviewRef.current;
+
       const handleUrlChange = (_event, newUrl: string): void => {
         if (activeTabGroup && newUrl) {
           updateTabUrl(activeTabGroup, activeTabGroup?.active, newUrl);
@@ -53,6 +79,23 @@ function App(): JSX.Element {
       };
       const handleIconChange = (_event, _newIcons): void => {};
 
+      const handleDomReady = (): void => {
+        window.nativeApi.activeTab.ready(webview.getWebContentsId());
+      };
+      const handleKeyDown = (event: KeyboardEvent) => {
+        // Check if the pressed keys match the "loseFocus" hotkey
+        console.log("Keys pressed", event)
+        const isLoseFocusHotkey =
+          event.metaKey && event.key === 'Escape'; // meta+esc
+  
+        if (isLoseFocusHotkey && webview) {
+          console.log('Lose focus hotkey pressed!');
+          webview.blur(); // Remove focus from the webview
+          event.preventDefault(); // Prevent default behavior if necessary
+        }
+      };
+
+      window.nativeApi.tab.onBlur(() => webview.blur())
       // Attach listeners when the active tab changes
       webview.addEventListener('did-navigate', (event) => {
         handleUrlChange(event, webview.getURL());
@@ -63,12 +106,19 @@ function App(): JSX.Element {
       webview.addEventListener('page-favicon-updated', (event) => {
         handleIconChange(event, event.favicons);
       });
+      webview.addEventListener('dom-ready', handleDomReady);
+      webview.addEventListener('keydown', handleKeyDown);
+
 
       // Cleanup previous listeners when tab changes
       return () => {
         webview.removeEventListener('did-navigate', handleUrlChange as EventListener);
         webview.removeEventListener('page-title-updated', handleTitleChange as EventListener);
         webview.removeEventListener('page-favicon-updated', handleIconChange as EventListener);
+        webview.removeEventListener('dom-ready', handleDomReady);
+        webview.removeEventListener('keydown', handleKeyDown);
+        window.nativeApi.tab.offBlur(() => webview.blur());
+
       };
     }
 
@@ -84,7 +134,7 @@ function App(): JSX.Element {
   );
 
   return (
-    <>
+    <div style={{backgroundColor}}>
       <button
         hidden={isPinned}
         onMouseEnter={() => setOpen(true)}
@@ -97,7 +147,7 @@ function App(): JSX.Element {
         className="absolute right-0 h-full w-4/5 z-50"
       />
       <Drawer>
-        <DrawerContent id="no-drag" className="bg-default">
+        <DrawerContent id="no-drag" style={{backgroundColor}}>
           <AddressBar url={activeTabGroup?.active.url ?? ''} />
 
           <DrawerFooter></DrawerFooter>
@@ -131,14 +181,28 @@ function App(): JSX.Element {
                     />
                   </div>
                 </div>
+              ) : isSettings ? (
+                <div
+                  className={clsx(
+                    'w-full bg-white overflow-auto',
+                    isPinned ? 'h-[calc(100vh-2*1rem)]' : 'h-[calc(100vh-1*1rem)]'
+                  )}
+                >
+                  <Settings />
+                </div>
               ) : (
-                <div className="w-full h-full flex justify-center items-center"></div>
+                <div
+                  className={clsx(
+                    'w-full bg-white overflow-auto',
+                    isPinned ? 'h-[calc(100vh-2*1rem)]' : 'h-[calc(100vh-1*1rem)]'
+                  )}
+                ></div>
               )}
             </div>
           </div>
         </SidebarProvider>
       </Drawer>
-    </>
+    </div>
   );
 }
 

@@ -1,4 +1,4 @@
-import { Search, RotateCcw, Undo2, Redo2, PanelRightClose } from 'lucide-react';
+import { Search, RotateCcw, Undo2, Redo2, PanelRightClose, Settings } from 'lucide-react';
 import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
 
@@ -19,6 +19,7 @@ import Tabs from '../Tabs';
 import { DrawerTrigger } from '../ui/drawer';
 import { Button } from '../ui/button';
 import NativeControls from '../NativeControls';
+import { useSettingsStore } from '@renderer/store/settings';
 
 interface SidebarProps {
   currentTab: string | null;
@@ -26,7 +27,8 @@ interface SidebarProps {
 
 export const AppSidebar = (props: SidebarProps): JSX.Element => {
   const { currentTab } = props;
-  const { isPinned, isOpen, setPinned } = useSidebarStore();
+  const { isPinned, isOpen, setPinned, isSettings, setSettings } = useSidebarStore();
+  const { backgroundColor } = useSettingsStore();
   const [canGoBack, setCanGoBack] = useState(false);
   const [canGoForward, setCanGoForward] = useState(false);
   const { getTab } = useTabs();
@@ -36,7 +38,7 @@ export const AppSidebar = (props: SidebarProps): JSX.Element => {
     webviewRef.current = getTab();
     const webview = webviewRef.current;
 
-    if (window.electron && webviewRef && webview) {
+    if (window.electronApi && webviewRef && webview) {
       const updateNavButtons = (): void => {
         if (webviewRef) {
           setCanGoBack(webview.canGoBack());
@@ -88,26 +90,35 @@ export const AppSidebar = (props: SidebarProps): JSX.Element => {
       )}
       variant={isPinned ? 'sidebar' : 'floating'}
     >
-      <SidebarContent id="no-drag" className="bg-default border-none box-border">
+      <SidebarContent id="no-drag" style={{ backgroundColor }} className="border-none box-border">
         <NativeControls>
           <Button
-            className="bg-transparent border-none shadow-none w-10"
+            className={clsx('bg-transparent shadow-none w-5 px-3 h-8 bg-slate-700 bg-opacity-10')}
+            onClick={() => setSettings(!isSettings)}
+          >
+            <Settings />
+          </Button>
+          <Button
+            className={clsx(
+              'bg-transparent shadow-none w-5 px-3 h-8',
+              isPinned && 'bg-slate-700 bg-opacity-10'
+            )}
             onClick={() => setPinned(!isPinned)}
           >
             <PanelRightClose />
           </Button>
         </NativeControls>
-        <Button className="bg-[#b39e55] border-none mx-2 z-10">
+        <Button className="bg-opacity-10 border-none mx-2 z-10">
           <div className="flex justify-between items-center w-full">
             <Search className="text-[#8a793f]" />
             <p
               className={clsx(
-                'p-2',
+                'p-2 w-full',
                 !currentTab && 'text-[#8a793f]',
                 currentTab && 'truncate  text-[#5b5029]'
               )}
             >
-              {currentTab ?? 'Suche nach etwas'}
+              {isSettings ? 'Settings' : currentTab ?? 'Suche nach etwas'}
             </p>
           </div>
         </Button>

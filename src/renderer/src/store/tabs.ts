@@ -1,6 +1,8 @@
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { v4 as uuid } from 'uuid';
 import { MosaicNode } from 'react-mosaic-component/lib/types';
+import { useSidebar } from '@renderer/components/ui/sidebar';
+import { useSidebarStore } from './sidebar';
 
 export interface Tab {
   id: string;
@@ -45,7 +47,7 @@ function splitNode(
 interface TabGroupStore {
   tabGroups: TabGroup[];
   activeTabGroup: string | null;
-  addTabGroup: () => void;
+  addTabGroup: (url?: string) => void;
   setActiveTabGroup: (tabGroup: TabGroup) => void;
   getTabGroupById: (tabGroupId: string | null) => TabGroup | null;
   updateTabUrl: (tabGroup: TabGroup, tab: Tab, url: string) => void;
@@ -53,6 +55,7 @@ interface TabGroupStore {
   updatedLayout: (newLayout: MosaicNode<string>, pActiveTabGroup?: TabGroup) => void;
   updateTabGroupOrder: (newTabGroups: TabGroup[]) => void;
   setActiveTab: (newActiveTabId: string, pActiveTabGroup?: TabGroup) => void;
+  removeActiveTab: () => void;
   layout: {
     split: {
       vertical: () => void;
@@ -61,9 +64,9 @@ interface TabGroupStore {
   };
 }
 
-export const createTab = (): Tab => ({
+export const createTab = (url?: string): Tab => ({
   id: uuid(),
-  url: 'https://google.com',
+  url: url ?? 'https://google.com',
   title: undefined,
   icon: undefined
 });
@@ -71,9 +74,10 @@ export const createTab = (): Tab => ({
 export const useTabGroupStore = create<TabGroupStore>((set, get) => ({
   tabGroups: [], // Initialize tabs as an empty array
   activeTabGroup: null, // Correct initialization
-  addTabGroup: (): void =>
+  addTabGroup: (url?): void =>
     set((state) => {
-      const actualTab = createTab();
+      const actualTab = createTab(url);
+
       const id = uuid();
       const newTabGroup: TabGroup = {
         id,
@@ -91,6 +95,8 @@ export const useTabGroupStore = create<TabGroupStore>((set, get) => ({
   },
   setActiveTab: (newActiveTabId: string, pActiveTabGroup?: TabGroup): void => {
     if (newActiveTabId === useTabGroupStore.getState().activeTabGroup) return;
+    // if (!useSidebarStore.getState().isSettings)
+    //   return useSidebarStore.getState().setSettings(false);
     set((state) => {
       const activeTabGroup = pActiveTabGroup ?? state.getTabGroupById(state.activeTabGroup ?? '');
       return {
@@ -106,6 +112,7 @@ export const useTabGroupStore = create<TabGroupStore>((set, get) => ({
       };
     });
   },
+  removeActiveTab: (): void => set({ activeTabGroup: undefined }),
   updateTabUrl: (tabGroup: TabGroup, tab: Tab, url: string): void =>
     set((state) => ({
       tabGroups: state.tabGroups.map((group) =>

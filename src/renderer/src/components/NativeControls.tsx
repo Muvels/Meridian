@@ -10,8 +10,9 @@ interface NativeControlsProps {
 const NativeControls: React.FC<NativeControlsProps> = ({ children }) => {
   const { isPinned } = useSidebarStore();
   const handleAction = (action: 'close' | 'minimize' | 'fullscreen'): void => {
-    const { ipcRenderer } = window.require('electron');
-    ipcRenderer.send('window-control', action);
+    if (action === 'close') return window.nativeApi.close();
+    if (action === 'fullscreen') return window.nativeApi.maximize();
+    if (action === 'minimize') return window.nativeApi.minimize();
   };
 
   return (
@@ -40,7 +41,7 @@ const NativeControls: React.FC<NativeControlsProps> = ({ children }) => {
       </div>
 
       {/* Render children */}
-      <div className="">{children}</div>
+      <div className="flex gap-2">{children}</div>
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import Store from 'electron-store';
+
 import { defaults } from 'shared/defaults/settings';
 import { Hotkeys } from 'shared/types/hotkeys';
 

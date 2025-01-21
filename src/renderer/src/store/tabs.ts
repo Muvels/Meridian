@@ -1,8 +1,7 @@
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { v4 as uuid } from 'uuid';
 import { MosaicNode } from 'react-mosaic-component/lib/types';
-import { useSidebar } from '@renderer/components/ui/sidebar';
-import { useSidebarStore } from './sidebar';
+import { useWebview } from '@renderer/contexts/WebviewContext';
 
 export interface Tab {
   id: string;
@@ -44,6 +43,33 @@ function splitNode(
   };
 }
 
+function removeNode(
+  layout: MosaicNode<string> | null,
+  nodeIdToRemove: string
+): MosaicNode<string> | null {
+  if (!layout) return null;
+
+  // If the layout is a leaf node
+  if (typeof layout === 'string') {
+    return layout === nodeIdToRemove ? null : layout;
+  }
+
+  // Recursively process child nodes
+  const updatedFirst = removeNode(layout.first, nodeIdToRemove);
+  const updatedSecond = removeNode(layout.second, nodeIdToRemove);
+
+  // Handle the case where one child becomes null
+  if (!updatedFirst) return updatedSecond; // Promote second child
+  if (!updatedSecond) return updatedFirst; // Promote first child
+
+  // If both children remain valid, return the updated parent
+  return {
+    ...layout,
+    first: updatedFirst,
+    second: updatedSecond
+  };
+}
+
 interface TabGroupStore {
   tabGroups: TabGroup[];
   activeTabGroup: string | null;
@@ -56,6 +82,12 @@ interface TabGroupStore {
   updateTabGroupOrder: (newTabGroups: TabGroup[]) => void;
   setActiveTab: (newActiveTabId: string, pActiveTabGroup?: TabGroup) => void;
   removeActiveTab: () => void;
+  removeTab: (
+    tabId: string,
+    unregisterWebviewRef: (tabId: string) => void,
+    tabGroup?: TabGroup
+  ) => void;
+  removeTabGroup: (tabGroupId: string) => void;
   layout: {
     split: {
       vertical: () => void;
@@ -112,7 +144,6 @@ export const useTabGroupStore = create<TabGroupStore>((set, get) => ({
       };
     });
   },
-  removeActiveTab: (): void => set({ activeTabGroup: undefined }),
   updateTabUrl: (tabGroup: TabGroup, tab: Tab, url: string): void =>
     set((state) => ({
       tabGroups: state.tabGroups.map((group) =>
@@ -137,6 +168,63 @@ export const useTabGroupStore = create<TabGroupStore>((set, get) => ({
           : group
       )
     })),
+  removeActiveTab: (): void => set({ activeTabGroup: undefined }),
+  removeTab: (
+    tabId: string,
+    unregisterWebviewRef: (tabId: string) => void,
+    tabGroup?: TabGroup
+  ): void => {
+    set((state) => {
+      const activeTabGroup = tabGroup ?? state.getTabGroupById(state.activeTabGroup ?? '');
+
+      if (!activeTabGroup) {
+        console.warn('No active tab group found.');
+        return state;
+      }
+
+      const updatedTabs = activeTabGroup.tabs.filter((tab) => tab.id !== tabId);
+
+      // Determine the new active tab
+      const newActiveTab =
+        activeTabGroup.active.id === tabId
+          ? updatedTabs.length > 0
+            ? updatedTabs[0] // Set the first tab as active if available
+            : null // No tabs left
+          : activeTabGroup.active;
+
+      if (newActiveTab === null) {
+        return {
+          tabGroups: state.tabGroups.filter((group) => group.id !== activeTabGroup.id),
+          activeTabGroup: state.activeTabGroup === activeTabGroup.id ? null : state.activeTabGroup
+        };
+      }
+
+      // We remove the tab from the dom so we dont have webview garbage
+      document.getElementById(`webview-portal-root${tabId}`)?.remove();
+      unregisterWebviewRef(tabId);
+      const newLayout = removeNode(activeTabGroup.layout, tabId);
+
+      return {
+        tabGroups: state.tabGroups.map((group) =>
+          group.id === activeTabGroup.id
+            ? {
+                ...group,
+                layout: newLayout,
+                tabs: updatedTabs,
+                active: newActiveTab
+              }
+            : group
+        ),
+        activeTabGroup: newActiveTab ? state.activeTabGroup : null // Clear active group if no tabs left
+      };
+    });
+  },
+  removeTabGroup: (tabGroupId: string): void => {
+    set((state) => ({
+      tabGroups: state.tabGroups.filter((group) => group.id !== tabGroupId),
+      activeTabGroup: state.activeTabGroup === tabGroupId ? null : state.activeTabGroup
+    }));
+  },
   updatedLayout: (newLayout: MosaicNode<string>, pActiveTabGroup?: TabGroup): void => {
     set((state) => {
       const activeTabGroup = pActiveTabGroup ?? state.getTabGroupById(state.activeTabGroup ?? '');

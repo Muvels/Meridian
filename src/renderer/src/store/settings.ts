@@ -1,11 +1,12 @@
-import { defaults } from 'shared/defaults/settings';
-import { Hotkeys } from 'shared/types/hotkeys';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 
+import { defaults } from 'shared/defaults/settings';
+import { Hotkeys } from 'shared/types/hotkeys';
+
 export interface Settings {
-    backgroundColor: string;
-    adBlocker: boolean;
-    hotkeys: Hotkeys;
+  backgroundColor: string;
+  adBlocker: boolean;
+  hotkeys: Hotkeys;
 }
 
 interface SettingsStore extends Settings {
@@ -18,16 +19,16 @@ export const useSettingsStore = create<SettingsStore>((set) => ({
   backgroundColor: defaults.settings.backgroundColor,
   adBlocker: defaults.settings.adBlocker,
   hotkeys: defaults.settings.hotkeys,
-  setBackgroundColor: (color) => {
+  setBackgroundColor: (color): void => {
     // Update the Electron Store asynchronously
     window.nativeApi.store.set('settings.backgroundColor', color);
     set({ backgroundColor: color });
   },
-  setAdBlocker: (value) => {
+  setAdBlocker: (value): void => {
     window.nativeApi.store.set('settings.adBlocker', value);
     set({ adBlocker: value });
   },
-  initialize: (settings) => {
+  initialize: (settings): void => {
     set({ ...settings });
   }
 }));

@@ -29,7 +29,7 @@ export const MosaicViewComponent = (props: MosaicViewProps): JSX.Element => {
             typeof tabGroup.layout === 'string' && 'hide-toolbar'
           )}
           // Uncontrolled approach with "initialValue" for smooth resizing
-          initialValue={tabGroup.layout}
+          value={tabGroup.layout}
           // We only store final layout changes on "onRelease"
           onChange={() => {
             // Optionally disable pointer events while resizing

@@ -14,8 +14,6 @@ export type Hotkeys = {
     down: string;
     nextTab: string;
     previousTab: string;
-    back: string;
-    forward: string;
   };
   Resize: {
     left: string;
@@ -44,9 +42,11 @@ export type Hotkeys = {
     toggleDevTools: string;
   };
   Controls: {
-    selectAll: string;
     print: string;
-    toggleSidebar: string
-    loseFocus: string
+    toggleUrlbar: string;
+    toggleSidebar: string;
+    sidebarVisible: string;
+    loseFocus: string;
+    getFocus: string;
   };
 };

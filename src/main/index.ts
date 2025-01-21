@@ -1,14 +1,12 @@
 import path, { join } from 'path';
 
-import { app, shell, BrowserWindow, ipcMain, session, webContents } from 'electron';
+import { app, BrowserWindow, ipcMain, session, webContents } from 'electron';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import { WebExtensionBlocker } from '@ghostery/adblocker-webextension';
-
 
 import icon from '../../resources/icon.png?asset';
 
 import settingsStore from './utils/settingsStore';
-import { defaults } from 'shared/defaults/settings';
 
 function createWindow(): void {
   // Create the browser window.
@@ -44,14 +42,12 @@ function createWindow(): void {
     return { action: 'deny' };
   });
 
-
-  if (settingsStore.get("settings.adBlocker")) {
+  if (settingsStore.get('settings.adBlocker')) {
     WebExtensionBlocker.fromPrebuiltAdsAndTracking().then((blocker) => {
       blocker.enableBlockingInBrowser(mainWindow);
     });
-  }
-  else {
-    console.log("No ad blocker active")
+  } else {
+    console.log('No ad blocker active');
   }
 
   // HMR for renderer base on electron-vite cli.
@@ -69,22 +65,19 @@ function createWindow(): void {
       if (input.type !== 'keyDown') return;
       if (input.meta && input.key === 'Escape') {
         console.log('Meta+Escape detected, blurring webview');
-        mainWindow.webContents.send('blur-tab')
+        mainWindow.webContents.send('blur-tab');
         return;
       }
-      if (input.key === settingsStore.get("settings.hotkeys.Browser.toggleDevTools"))
-        return wv?.openDevTools()
-      if (input.key === settingsStore.get("settings.hotkeys.Browser.reload"))
-       return  wv?.reload();
-      if (input.key === settingsStore.get("settings.hotkeys.Browser.undo"))
-        return wv?.navigationHistory.goBack()
-      if (input.key === settingsStore.get("settings.hotkeys.Browser.redo"))
-        return wv?.navigationHistory.goForward()
-
-
+      if (input.key === settingsStore.get('settings.hotkeys.Browser.toggleDevTools'))
+        return wv?.openDevTools();
+      if (input.key === settingsStore.get('settings.hotkeys.Browser.reload')) return wv?.reload();
+      if (input.key === settingsStore.get('settings.hotkeys.Browser.undo'))
+        return wv?.navigationHistory.goBack();
+      if (input.key === settingsStore.get('settings.hotkeys.Browser.redo'))
+        return wv?.navigationHistory.goForward();
     };
 
-    wv?.on('before-input-event', handleBeforeInputEvent)
+    wv?.on('before-input-event', handleBeforeInputEvent);
 
     // Neue Fenster blocken
     wv?.setWindowOpenHandler((details) => {
@@ -99,7 +92,7 @@ function createWindow(): void {
   });
 }
 
-console.log("=============== USER DATA PATH: ", app.getPath('userData'), ' ===============')
+console.log('=============== USER DATA PATH: ', app.getPath('userData'), ' ===============');
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -145,9 +138,7 @@ void app.whenReady().then(() => {
     settingsStore.set(key, value);
   });
 
-  ipcMain.handle('store-get', (_event, key: string) => {
-    return settingsStore.get(key);
-  });
+  ipcMain.handle('store-get', (_event, key: string) => settingsStore.get(key));
 
   createWindow();
 

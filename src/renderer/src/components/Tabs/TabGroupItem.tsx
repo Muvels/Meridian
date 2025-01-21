@@ -7,8 +7,14 @@ import clsx from 'clsx';
 
 import { Tab, TabGroup } from '@renderer/store/tabs';
 import { useSettingsStore } from '@renderer/store/settings';
+import { useWebview } from '@renderer/contexts/WebviewContext';
 
 interface TabGroupItemProps {
+  deleteTab: (
+    tabId: string,
+    unregisterWebviewRef: (tabId: string) => void,
+    TabGroup: TabGroup
+  ) => void;
   setActiveTabGroup: (tabGroup: TabGroup) => void;
   activeTabGroup: TabGroup | null;
   tabGroup: TabGroup;
@@ -17,9 +23,16 @@ interface TabGroupItemProps {
 
 let clickTimeout: NodeJS.Timeout | null = null;
 
-const TabGroupItem: FC<TabGroupItemProps> = ({ setActiveTabGroup, tabGroup, activeTabGroup }) => {
+const TabGroupItem: FC<TabGroupItemProps> = ({
+  setActiveTabGroup,
+  tabGroup,
+  activeTabGroup,
+  deleteTab
+}) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const { backgroundColor } = useSettingsStore();
+  const { unregisterWebviewRef } = useWebview();
+
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: tabGroup.id
   });
@@ -34,6 +47,7 @@ const TabGroupItem: FC<TabGroupItemProps> = ({ setActiveTabGroup, tabGroup, acti
     if (clickTimeout) {
       clearTimeout(clickTimeout);
       clickTimeout = null;
+      console.log('FUnction executed', executeFunction);
       executeFunction();
     }
   };
@@ -85,7 +99,7 @@ const TabGroupItem: FC<TabGroupItemProps> = ({ setActiveTabGroup, tabGroup, acti
               </CollapsibleTrigger>
             </div>
           </div>
-          <CollapsibleContent style={{ backgroundColor }}className="space-y-1 p-1 rounded-lg">
+          <CollapsibleContent style={{ backgroundColor }} className="space-y-1 p-1 rounded-lg">
             {tabGroup.tabs.map((tab) => (
               <div
                 key={tab.id}
@@ -96,9 +110,13 @@ const TabGroupItem: FC<TabGroupItemProps> = ({ setActiveTabGroup, tabGroup, acti
                 <img src={'/default-favicon.png'} alt="Favicon" className="w-4 h-4 mr-2 hidden" />
                 <span className="truncate">{tab.title ?? tab.url}</span>
                 <button
-                  className="text-red-500 ml-2"
+                  className="text-red-500 ml-2 z-30"
+                  onMouseDown={handleMouseDown}
+                  onMouseUp={() =>
+                    handleMouseUp(() => deleteTab(tab.id, unregisterWebviewRef, tabGroup))
+                  }
                   onClick={(e) => {
-                    e.stopPropagation(); // Prevent tab switching when closing
+                    e.stopPropagation();
                   }}
                 >
                   ×
@@ -118,9 +136,13 @@ const TabGroupItem: FC<TabGroupItemProps> = ({ setActiveTabGroup, tabGroup, acti
             <img src={'/default-favicon.png'} alt="Favicon" className="w-4 h-4 mr-2 hidden" />
             <span className="truncate">{tab.title ?? tab.url}</span>
             <button
-              className="text-red-500 ml-2"
+              className="text-red-500 ml-2 z-30"
+              onMouseDown={handleMouseDown}
+              onMouseUp={() =>
+                handleMouseUp(() => deleteTab(tab.id, unregisterWebviewRef, tabGroup))
+              }
               onClick={(e) => {
-                e.stopPropagation(); // Prevent tab switching when closing
+                e.stopPropagation();
               }}
             >
               ×

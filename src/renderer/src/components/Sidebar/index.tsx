@@ -14,12 +14,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from 'src/components/ui/sidebar';
+import { useSettingsStore } from '@renderer/store/settings';
 
 import Tabs from '../Tabs';
 import { DrawerTrigger } from '../ui/drawer';
 import { Button } from '../ui/button';
 import NativeControls from '../NativeControls';
-import { useSettingsStore } from '@renderer/store/settings';
 
 interface SidebarProps {
   currentTab: string | null;

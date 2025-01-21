@@ -4,6 +4,7 @@ import { createContext, useContext, useRef } from 'react';
 interface WebviewContextType {
   getWebviewRef: (tabId: string) => Electron.WebviewTag | null;
   registerWebviewRef: (tabId: string, ref: Electron.WebviewTag) => void;
+  unregisterWebviewRef: (tabId: string) => void;
 }
 
 type WebviewRefsType = {
@@ -21,8 +22,13 @@ export function WebviewProvider({ children }): JSX.Element {
     webviewRefs.current[tabId] = ref;
   };
 
+  const unregisterWebviewRef = (tabId: string): void => {
+    if (!webviewRefs.current[tabId]) return;
+    delete webviewRefs.current[tabId];
+  };
+
   return (
-    <WebviewContext.Provider value={{ getWebviewRef, registerWebviewRef }}>
+    <WebviewContext.Provider value={{ getWebviewRef, registerWebviewRef, unregisterWebviewRef }}>
       {children}
     </WebviewContext.Provider>
   );

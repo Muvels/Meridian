@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useSettingsStore } from '@renderer/store/settings';
-import { Switch } from '../ui/switch';
+
 import { Checkbox } from '../ui/checkbox';
 
 interface SettingsProps {

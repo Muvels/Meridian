@@ -8,18 +8,16 @@ export const defaults = {
         horizontally: 'w s h'
       },
       Close: {
-        current: 'ctrl+w, c',
-        all: 'ctrl+w, o'
+        current: 'w c c',
+        all: 'w c a'
       },
       Navigate: {
-        left: 'ctrl+w, h',
-        right: 'ctrl+w, l',
-        up: 'ctrl+w, k',
-        down: 'ctrl+w, j',
+        left: 'w s l',
+        right: 'w s r',
+        up: 'w s t',
+        down: 'w s b',
         nextTab: 'g, t',
-        previousTab: 'g, T',
-        back: 'ctrl+o',
-        forward: 'ctrl+i'
+        previousTab: 'g, T'
       },
       Resize: {
         left: 'ctrl+w, <',
@@ -28,13 +26,13 @@ export const defaults = {
         down: 'ctrl+w, -'
       },
       Maximize: {
-        current: 'ctrl+w, |'
+        current: 'w m'
       },
       Equalize: {
-        sizes: 'ctrl+w, ='
+        sizes: 'w e'
       },
       Browser: {
-        openNewTab: 't',
+        openNewTab: 'w n t',
         closeTab: 'd',
         reload: 'F5',
         undo: 'F4',
@@ -48,10 +46,12 @@ export const defaults = {
         toggleDevTools: 'F12'
       },
       Controls: {
-        selectAll: 'ctrl+a',
         print: 'ctrl+p',
+        toggleUrlbar: 'meta+u',
         toggleSidebar: 'meta+s',
-        loseFocus: 'meta+esc'
+        sidebarVisible: 's t',
+        loseFocus: 'meta+esc',
+        getFocus: 'a t'
       }
     }
   }

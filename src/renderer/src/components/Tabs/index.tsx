@@ -16,6 +16,8 @@ import {
 import { DrawerTrigger } from '../ui/drawer';
 
 import TabGroupItem from './TabGroupItem';
+import useHotkeys from '@reecelucas/react-use-hotkeys';
+import { useSettingsStore } from '@renderer/store/settings';
 
 const Tabs: React.FC = () => {
   const {
@@ -25,8 +27,13 @@ const Tabs: React.FC = () => {
     setActiveTabGroup,
     getTabGroupById,
     layout,
-    updateTabGroupOrder
+    updateTabGroupOrder,
+    removeTab,
+    removeTabGroup
   } = useTabGroupStore();
+  const { hotkeys } = useSettingsStore();
+
+  useHotkeys(hotkeys.Browser.openNewTab, () => addTabGroup());
 
   const activeTabGroup = getTabGroupById(activeTabGroupId);
 
@@ -60,6 +67,7 @@ const Tabs: React.FC = () => {
             <ContextMenu key={`tab-${tabGroup.id}`}>
               <ContextMenuTrigger>
                 <TabGroupItem
+                  deleteTab={removeTab}
                   setActiveTabGroup={setActiveTabGroup}
                   activeTabGroup={activeTabGroup}
                   tabGroup={tabGroup}
@@ -73,7 +81,7 @@ const Tabs: React.FC = () => {
                   onClick={layout.split.vertical}
                 >
                   Add new Vertical Tab
-                  <ContextMenuShortcut></ContextMenuShortcut>
+                  <ContextMenuShortcut>w s v</ContextMenuShortcut>
                 </ContextMenuItem>
                 <ContextMenuItem
                   className="hover:bg-gray-200"
@@ -81,7 +89,7 @@ const Tabs: React.FC = () => {
                   onClick={layout.split.horizontal}
                 >
                   Add new Horizontal Tab
-                  <ContextMenuShortcut></ContextMenuShortcut>
+                  <ContextMenuShortcut>w s h</ContextMenuShortcut>
                 </ContextMenuItem>
                 <ContextMenuItem inset className="hover:bg-gray-200">
                   <DrawerTrigger>Show full URL</DrawerTrigger>

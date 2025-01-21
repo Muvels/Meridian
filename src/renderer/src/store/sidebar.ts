@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+
 import useTabGroupStore from './tabs';
 
 interface SidebarStoreType {

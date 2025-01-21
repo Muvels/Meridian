@@ -2,6 +2,8 @@ import { X, Info, ArrowLeft, ArrowRight, RefreshCcw } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 import { useTabs } from '@renderer/hooks/use-tabs';
+import { useWebview } from '@renderer/contexts/WebviewContext';
+import useTabGroupStore from '@renderer/store/tabs';
 
 interface ToolbarProps {
   id: string;
@@ -11,6 +13,8 @@ interface ToolbarProps {
 export const Toolbar = ({ id, title }: ToolbarProps): JSX.Element => {
   const [canGoBack, setCanGoBack] = useState(false);
   const [canGoForward, setCanGoForward] = useState(false);
+  const { unregisterWebviewRef } = useWebview();
+  const { removeTab } = useTabGroupStore();
   const { getTab } = useTabs();
   const webviewRef = useRef<Electron.WebviewTag | null>(getTab(id));
 
@@ -72,7 +76,7 @@ export const Toolbar = ({ id, title }: ToolbarProps): JSX.Element => {
         <button onClick={() => alert(`Action for ${id}`)}>
           <Info width={17} />
         </button>
-        <button onClick={() => null}>
+        <button onClick={() => removeTab(id, unregisterWebviewRef)}>
           <X width={17} />
         </button>
       </div>

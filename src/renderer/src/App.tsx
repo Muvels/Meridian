@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { MosaicNode } from 'react-mosaic-component';
+import useHotkeys from '@reecelucas/react-use-hotkeys';
 
 import { useSidebarStore } from '@renderer/store/sidebar';
 
@@ -18,7 +19,6 @@ import 'react-mosaic-component/react-mosaic-component.css';
 import './assets/styles.css';
 import Settings from './components/Settings';
 import { useSettingsStore } from './store/settings';
-import useHotkeys  from '@reecelucas/react-use-hotkeys';
 
 function App(): JSX.Element {
   // const { updateTabTitle, updateTabFavicon, updateTabUrl } = useTabStore()
@@ -39,14 +39,14 @@ function App(): JSX.Element {
   const activeTabGroup = getTabGroupById(activeTabGroupId);
   const webviewRef = useRef<Electron.WebviewTag | null>(null);
 
-  useHotkeys(hotkeys.Controls.toggleSidebar, () => setPinned(!isPinned))
-  useHotkeys(hotkeys.Browser.reload, () => webviewRef.current?.reload())
-  useHotkeys(hotkeys.Browser.undo, () => webviewRef.current?.goBack())
-  useHotkeys(hotkeys.Browser.redo, () => webviewRef.current?.goForward())
-  useHotkeys(hotkeys.Split.horizontally, () => layout.split.horizontal())
-  useHotkeys(hotkeys.Split.vertically, () => layout.split.vertical())
-
-
+  useHotkeys(hotkeys.Controls.getFocus, () => webviewRef.current?.focus());
+  useHotkeys(hotkeys.Controls.toggleSidebar, () => setPinned(!isPinned));
+  useHotkeys(hotkeys.Controls.sidebarVisible, () => setOpen(!isOpen));
+  useHotkeys(hotkeys.Browser.reload, () => webviewRef.current?.reload());
+  useHotkeys(hotkeys.Browser.undo, () => webviewRef.current?.goBack());
+  useHotkeys(hotkeys.Browser.redo, () => webviewRef.current?.goForward());
+  useHotkeys(hotkeys.Split.horizontally, () => layout.split.horizontal());
+  useHotkeys(hotkeys.Split.vertically, () => layout.split.vertical());
 
   // eslint-disable-next-line react-compiler/react-compiler
   webviewRef.current = getTab(activeTabGroup?.active.id);
@@ -84,10 +84,9 @@ function App(): JSX.Element {
       };
       const handleKeyDown = (event: KeyboardEvent) => {
         // Check if the pressed keys match the "loseFocus" hotkey
-        console.log("Keys pressed", event)
-        const isLoseFocusHotkey =
-          event.metaKey && event.key === 'Escape'; // meta+esc
-  
+        console.log('Keys pressed', event);
+        const isLoseFocusHotkey = event.metaKey && event.key === 'Escape'; // meta+esc
+
         if (isLoseFocusHotkey && webview) {
           console.log('Lose focus hotkey pressed!');
           webview.blur(); // Remove focus from the webview
@@ -95,7 +94,7 @@ function App(): JSX.Element {
         }
       };
 
-      window.nativeApi.tab.onBlur(() => webview.blur())
+      window.nativeApi.tab.onBlur(() => webview.blur());
       // Attach listeners when the active tab changes
       webview.addEventListener('did-navigate', (event) => {
         handleUrlChange(event, webview.getURL());
@@ -109,7 +108,6 @@ function App(): JSX.Element {
       webview.addEventListener('dom-ready', handleDomReady);
       webview.addEventListener('keydown', handleKeyDown);
 
-
       // Cleanup previous listeners when tab changes
       return () => {
         webview.removeEventListener('did-navigate', handleUrlChange as EventListener);
@@ -118,7 +116,6 @@ function App(): JSX.Element {
         webview.removeEventListener('dom-ready', handleDomReady);
         webview.removeEventListener('keydown', handleKeyDown);
         window.nativeApi.tab.offBlur(() => webview.blur());
-
       };
     }
 
@@ -133,8 +130,12 @@ function App(): JSX.Element {
     [updatedLayout]
   );
 
+  const handleUrlChange = useCallback((url: string) => {
+    void (webviewRef && webviewRef.current && webviewRef.current.loadURL(url));
+  }, []);
+
   return (
-    <div style={{backgroundColor}}>
+    <div style={{ backgroundColor }}>
       <button
         hidden={isPinned}
         onMouseEnter={() => setOpen(true)}
@@ -147,8 +148,8 @@ function App(): JSX.Element {
         className="absolute right-0 h-full w-4/5 z-50"
       />
       <Drawer>
-        <DrawerContent id="no-drag" style={{backgroundColor}}>
-          <AddressBar url={activeTabGroup?.active.url ?? ''} />
+        <DrawerContent id="no-drag" style={{ backgroundColor }}>
+          <AddressBar changeUrl={handleUrlChange} url={activeTabGroup?.active.url ?? ''} />
 
           <DrawerFooter></DrawerFooter>
         </DrawerContent>

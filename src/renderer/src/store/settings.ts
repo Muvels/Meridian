@@ -12,6 +12,7 @@ export interface Settings {
 interface SettingsStore extends Settings {
   setBackgroundColor: (color: string) => void;
   setAdBlocker: (value: boolean) => void;
+  setHotkey: (category: string, action: string, newHotkey: string) => void;
   initialize: (settings: Settings) => void;
 }
 
@@ -27,6 +28,18 @@ export const useSettingsStore = create<SettingsStore>((set) => ({
   setAdBlocker: (value): void => {
     window.nativeApi.store.set('settings.adBlocker', value);
     set({ adBlocker: value });
+  },
+  setHotkey: (category: string, action: string, newHotkey: string): void => {
+    window.nativeApi.store.set(`settings.hotkeys.${category}.${action}`, newHotkey);
+    set((state) => ({
+      hotkeys: {
+        ...state.hotkeys,
+        [category]: {
+          ...state.hotkeys[category],
+          [action]: newHotkey
+        }
+      }
+    }));
   },
   initialize: (settings): void => {
     set({ ...settings });

@@ -3,6 +3,7 @@ import { Plus } from 'lucide-react';
 // eslint-disable-next-line import/named
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext } from '@dnd-kit/sortable';
+import useHotkeys from '@reecelucas/react-use-hotkeys';
 
 import { useTabGroupStore } from '@renderer/store/tabs';
 import {
@@ -12,12 +13,11 @@ import {
   ContextMenuShortcut,
   ContextMenuTrigger
 } from '@/components/ui/context-menu';
+import { useSettingsStore } from '@renderer/store/settings';
 
 import { DrawerTrigger } from '../ui/drawer';
 
 import TabGroupItem from './TabGroupItem';
-import useHotkeys from '@reecelucas/react-use-hotkeys';
-import { useSettingsStore } from '@renderer/store/settings';
 
 const Tabs: React.FC = () => {
   const {
@@ -28,8 +28,7 @@ const Tabs: React.FC = () => {
     getTabGroupById,
     layout,
     updateTabGroupOrder,
-    removeTab,
-    removeTabGroup
+    removeTab
   } = useTabGroupStore();
   const { hotkeys } = useSettingsStore();
 
@@ -78,7 +77,7 @@ const Tabs: React.FC = () => {
                 <ContextMenuItem
                   className="hover:bg-gray-200"
                   inset
-                  onClick={layout.split.vertical}
+                  onClick={() => layout.split.vertical()}
                 >
                   Add new Vertical Tab
                   <ContextMenuShortcut>w s v</ContextMenuShortcut>
@@ -86,7 +85,7 @@ const Tabs: React.FC = () => {
                 <ContextMenuItem
                   className="hover:bg-gray-200"
                   inset
-                  onClick={layout.split.horizontal}
+                  onClick={() => layout.split.horizontal()}
                 >
                   Add new Horizontal Tab
                   <ContextMenuShortcut>w s h</ContextMenuShortcut>

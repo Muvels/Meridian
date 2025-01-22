@@ -10,9 +10,9 @@ interface NativeControlsProps {
 const NativeControls: React.FC<NativeControlsProps> = ({ children }) => {
   const { isPinned } = useSidebarStore();
   const handleAction = (action: 'close' | 'minimize' | 'fullscreen'): void => {
-    if (action === 'close') return window.nativeApi.close();
-    if (action === 'fullscreen') return window.nativeApi.maximize();
-    if (action === 'minimize') return window.nativeApi.minimize();
+    if (action === 'close') return window.nativeApi.close() as void;
+    if (action === 'fullscreen') return window.nativeApi.maximize() as void;
+    if (action === 'minimize') return window.nativeApi.minimize() as void;
   };
 
   return (

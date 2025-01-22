@@ -30,7 +30,8 @@ function App(): JSX.Element {
     updatedLayout,
     getTabGroupById,
     addTabGroup,
-    layout
+    layout,
+    handleNavigation
   } = useTabGroupStore();
   const { isPinned, setOpen, isOpen, isSettings, setPinned } = useSidebarStore();
   const { backgroundColor, hotkeys } = useSettingsStore();
@@ -47,7 +48,11 @@ function App(): JSX.Element {
   useHotkeys(hotkeys.Browser.redo, () => webviewRef.current?.goForward());
   useHotkeys(hotkeys.Split.horizontally, () => layout.split.horizontal());
   useHotkeys(hotkeys.Split.vertically, () => layout.split.vertical());
-
+  // Switch in mosic
+  useHotkeys(hotkeys.Navigate.left, () => handleNavigation('left'));
+  useHotkeys(hotkeys.Navigate.right, () => handleNavigation('right'));
+  useHotkeys(hotkeys.Navigate.down, () => handleNavigation('down'));
+  useHotkeys(hotkeys.Navigate.up, () => handleNavigation('up'));
   // eslint-disable-next-line react-compiler/react-compiler
   webviewRef.current = getTab(activeTabGroup?.active.id);
 
@@ -82,13 +87,11 @@ function App(): JSX.Element {
       const handleDomReady = (): void => {
         window.nativeApi.activeTab.ready(webview.getWebContentsId());
       };
-      const handleKeyDown = (event: KeyboardEvent) => {
+      const handleKeyDown = (event: KeyboardEvent): void => {
         // Check if the pressed keys match the "loseFocus" hotkey
-        console.log('Keys pressed', event);
         const isLoseFocusHotkey = event.metaKey && event.key === 'Escape'; // meta+esc
 
         if (isLoseFocusHotkey && webview) {
-          console.log('Lose focus hotkey pressed!');
           webview.blur(); // Remove focus from the webview
           event.preventDefault(); // Prevent default behavior if necessary
         }

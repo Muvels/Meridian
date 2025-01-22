@@ -1,10 +1,10 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import { electronAPI } from '@electron-toolkit/preload';
 
-contextBridge.exposeInMainWorld('electron', {
-  onUrlChange: (callback) => ipcRenderer.on('url-changed', callback),
-  onTitleChange: (callback) => ipcRenderer.on('title-updated', callback)
-});
+// contextBridge.exposeInMainWorld('electron', {
+//   onUrlChange: (callback) => ipcRenderer.on('url-changed', callback),
+//   onTitleChange: (callback) => ipcRenderer.on('title-updated', callback)
+// });
 
 // Custom APIs for renderer
 const api = {
@@ -15,12 +15,15 @@ const api = {
     ready: (wcId: number): void => ipcRenderer.send('webview-ready', wcId)
   },
   tab: {
-    onCreate: (callback) => ipcRenderer.on('create-tab', (_event, value) => callback(value)),
-    offCreate: () => {
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+    onCreate: (callback) =>
+      ipcRenderer.on('create-tab', (_event, value) => callback(value) as (value: string) => void),
+    offCreate: (): void => {
       ipcRenderer.removeAllListeners('create-tab');
     },
-    onBlur: (callback) => ipcRenderer.on('blur-tab', (_event) => callback()),
-    offBlur: () => {
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+    onBlur: (callback) => ipcRenderer.on('blur-tab', (_event) => callback() as () => void),
+    offBlur: (): void => {
       ipcRenderer.removeAllListeners('blur-tab');
     }
   },

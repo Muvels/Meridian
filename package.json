@@ -1,7 +1,7 @@
 {
   "name": "prospect",
-  "version": "0.0.1",
-  "description": "An Electron application with React and TypeScript",
+  "version": "0.0.2",
+  "description": "An Electron browser with React and TypeScript",
   "main": "./out/main/index.js",
   "author": "matteo",
   "homepage": "",
@@ -14,7 +14,7 @@
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
     "start": "electron-vite preview",
-    "dev": "electron-vite dev",
+    "dev": "NODE_ENV=development electron-vite dev",
     "build": "npm run typecheck && electron-vite build",
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",

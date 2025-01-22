@@ -29,14 +29,14 @@ export const MosaicViewComponent = (props: MosaicViewProps): JSX.Element => {
             typeof tabGroup.layout === 'string' && 'hide-toolbar'
           )}
           // Uncontrolled approach with "initialValue" for smooth resizing
-          value={tabGroup.layout}
+          initialValue={tabGroup.layout}
           // We only store final layout changes on "onRelease"
           onChange={() => {
             // Optionally disable pointer events while resizing
             setIsClickable(false);
           }}
           onRelease={(newNode) => {
-            newNode && updatedLayout(newNode);
+            newNode && updatedLayout(newNode as MosaicNode<string>);
             setIsClickable(true);
           }}
           renderTile={(id: string, path) => {
@@ -44,7 +44,11 @@ export const MosaicViewComponent = (props: MosaicViewProps): JSX.Element => {
             return (
               <MosaicWindow
                 path={path}
-                title={(<Toolbar id={id} title={tab?.title ?? tab?.url} />) as unknown as string}
+                title={
+                  (
+                    <Toolbar id={id} title={tab?.title ?? tab?.url} tabGroup={tabGroup} />
+                  ) as unknown as string
+                }
                 toolbarControls={<></>}
                 onDragStart={() => {
                   setIsClickable(false);

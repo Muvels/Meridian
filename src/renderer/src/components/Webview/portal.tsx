@@ -20,12 +20,7 @@ export function WebViewPortal({
   url: string;
 }): JSX.Element | null {
   const { registerWebviewRef } = useWebview();
-  const {
-    activeTabGroup: activeTabGroupId,
-    getTabGroupById,
-    setActiveTab,
-    addTabGroup
-  } = useTabGroupStore();
+  const { activeTabGroup: activeTabGroupId, getTabGroupById, setActiveTab } = useTabGroupStore();
   const activeTabGroup = getTabGroupById(activeTabGroupId);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const webviewRef = useRef<Electron.WebviewTag | null>(null);

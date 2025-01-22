@@ -1,10 +1,12 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
 import clsx from 'clsx';
+import { SettingsIcon } from 'lucide-react';
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useSettingsStore } from '@renderer/store/settings';
+import { settingsDescription } from 'shared/defaults/settings.description';
 
 import { Checkbox } from '../ui/checkbox';
 
@@ -15,12 +17,35 @@ interface SettingsProps {
 const suggestedColors = ['#b7a153', '#7393B3', '#d1b6c6', '#cccccc'];
 
 const Settings: React.FC<SettingsProps> = () => {
-  const { backgroundColor, adBlocker, setBackgroundColor, setAdBlocker } = useSettingsStore();
+  const { backgroundColor, adBlocker, setBackgroundColor, setAdBlocker, hotkeys, setHotkey } =
+    useSettingsStore();
+  const [tempHotkeys, setTempHotkeys] = useState(hotkeys);
+
+  const handleInputChange = (categoryName, actionName, value): void => {
+    setTempHotkeys((prev) => ({
+      ...prev,
+      [categoryName]: {
+        ...prev[categoryName],
+        [actionName]: value
+      }
+    }));
+  };
+
+  const handleInputSave = (categoryName, actionName): void => {
+    const value = tempHotkeys[categoryName][actionName];
+    setHotkey(categoryName as string, actionName as string, value as string);
+  };
+
   return (
     <div className="w-full max-w-4xl mx-auto py-12 px-4 md:px-6">
       <div className="space-y-4">
         <div>
-          <h1 className="text-3xl font-bold text-black ">Settings</h1>
+          <div className="flex gap-3 items-center mb-1">
+            <div className="bg-gray-200 p-2 rounded-md">
+              <SettingsIcon />
+            </div>
+            <h1 className="text-3xl font-bold text-black ">Settings</h1>
+          </div>
           <p className="text-muted-foreground pt-1">Customize the browser to your preferences.</p>
 
           <hr className="my-3" />
@@ -83,6 +108,46 @@ const Settings: React.FC<SettingsProps> = () => {
           </Card>
           <Card className="rounded-md">
             <CardHeader>
+              <CardTitle>Keyboard Shortcuts</CardTitle>
+              <CardDescription>Map your own key combinations to the hotkeys</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              <form className="-mx-2 flex flex-col gap-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
+                {Object.entries(settingsDescription.settings.hotkeys).map(
+                  ([categoryName, categoryActions]) =>
+                    Object.entries(categoryActions).map(([actionName, actionDetails]) => (
+                      <div
+                        key={actionName}
+                        className="w-full flex gap-3 justify-between items-center"
+                      >
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium leading-none">{actionDetails.name}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {actionDetails.description}
+                          </p>
+                        </div>
+                        <div className="">
+                          <Input
+                            className="text-center"
+                            value={tempHotkeys[categoryName][actionName]}
+                            onChange={(e) =>
+                              handleInputChange(categoryName, actionName, e.target.value)
+                            }
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                handleInputSave(categoryName, actionName);
+                              }
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))
+                )}
+              </form>
+            </CardContent>
+          </Card>
+          <Card className="rounded-md">
+            <CardHeader>
               <CardTitle>Installed Extensions</CardTitle>
               <CardDescription>Look at installed plugin from the Chrome Web Store.</CardDescription>
             </CardHeader>
@@ -104,27 +169,7 @@ const Settings: React.FC<SettingsProps> = () => {
   );
 };
 
-function AtSignIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="4" />
-      <path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8" />
-    </svg>
-  );
-}
-
-function BellIcon(props) {
+function BellIcon(props): JSX.Element {
   return (
     <svg
       {...props}
@@ -143,27 +188,4 @@ function BellIcon(props) {
     </svg>
   );
 }
-
-function EyeOffIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
-      <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
-      <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" />
-      <line x1="2" x2="22" y1="2" y2="22" />
-    </svg>
-  );
-}
-
 export default Settings;

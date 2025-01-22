@@ -1,7 +1,6 @@
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { v4 as uuid } from 'uuid';
 import { MosaicNode } from 'react-mosaic-component/lib/types';
-import { useWebview } from '@renderer/contexts/WebviewContext';
 
 export interface Tab {
   id: string;
@@ -15,6 +14,154 @@ export interface TabGroup {
   tabs: Tab[];
   active: Tab;
   layout: MosaicNode<string>;
+}
+
+// A small interface for bounding boxes
+interface LayoutBox {
+  id: string; // tabId
+  x: number; // left
+  y: number; // top
+  width: number; // width
+  height: number; // height
+}
+
+// A helper to flatten your Mosaic layout into an array of bounding boxes.
+// We'll do a DFS and split the parent region by 'splitPercentage' for row vs column.
+//
+// This uses normalized dimensions from 0..1 for x/y/width/height.
+// So the entire mosaic is (0,0)-(1,1).
+function generateLayoutBoxes(
+  node: MosaicNode<string>,
+  x = 0,
+  y = 0,
+  width = 1,
+  height = 1
+): LayoutBox[] {
+  if (typeof node === 'string') {
+    // It's a leaf. Return one bounding box for this leaf node.
+    return [
+      {
+        id: node,
+        x,
+        y,
+        width,
+        height
+      }
+    ];
+  }
+
+  // It's an internal node
+  const { direction, first, second, splitPercentage = 50 } = node;
+  const splitRatio = splitPercentage / 100;
+
+  if (direction === 'row') {
+    // row => left/right split
+    const firstWidth = width * splitRatio;
+    const secondWidth = width - firstWidth;
+
+    // Flatten first child
+    const boxesFirst = generateLayoutBoxes(first, x, y, firstWidth, height);
+    // Flatten second child
+    const boxesSecond = generateLayoutBoxes(second, x + firstWidth, y, secondWidth, height);
+
+    return [...boxesFirst, ...boxesSecond];
+  } else {
+    // column => top/bottom split
+    const firstHeight = height * splitRatio;
+    const secondHeight = height - firstHeight;
+
+    // Flatten first child
+    const boxesFirst = generateLayoutBoxes(first, x, y, width, firstHeight);
+    // Flatten second child
+    const boxesSecond = generateLayoutBoxes(second, x, y + firstHeight, width, secondHeight);
+
+    return [...boxesFirst, ...boxesSecond];
+  }
+}
+
+function getCenter(box: LayoutBox): { cx: number; cy: number } {
+  return {
+    cx: box.x + box.width / 2,
+    cy: box.y + box.height / 2
+  };
+}
+
+function isOverlappingVertically(a: LayoutBox, b: LayoutBox): boolean {
+  // They overlap vertically if they have a positive intersection area, i.e.:
+  // a.top < b.bottom AND a.bottom > b.top
+  // with no “=” => they must actually overlap, not just touch.
+  return b.y < a.y + a.height && b.y + b.height > a.y;
+}
+
+function isOverlappingHorizontally(a: LayoutBox, b: LayoutBox): boolean {
+  // Similarly for x:
+  return b.x < a.x + a.width && b.x + b.width > a.x;
+}
+
+// Attempts to find the best neighbor in a particular direction
+// from the "activeBox". If none exist, returns null.
+function findNeighborInDirection(
+  boxes: LayoutBox[],
+  activeBox: LayoutBox,
+  direction: 'left' | 'right' | 'up' | 'down'
+): LayoutBox | null {
+  const { cx, cy } = getCenter(activeBox);
+
+  let candidates: LayoutBox[] = [];
+
+  if (direction === 'left') {
+    // We want boxes whose center is to the left
+    candidates = boxes.filter((b) => {
+      const { cx: bx } = getCenter(b);
+      // candidate must be to the left and have at least partial vertical overlap
+      return bx < cx && isOverlappingVertically(activeBox, b);
+    });
+    // Choose the one closest in the X direction
+    candidates.sort((a, b) => {
+      const distA = Math.abs(getCenter(a).cx - cx);
+      const distB = Math.abs(getCenter(b).cx - cx);
+      return distA - distB;
+    });
+  }
+
+  if (direction === 'right') {
+    candidates = boxes.filter((b) => {
+      const { cx: bx } = getCenter(b);
+      return bx > cx && isOverlappingVertically(activeBox, b);
+    });
+    candidates.sort((a, b) => {
+      const distA = Math.abs(getCenter(a).cx - cx);
+      const distB = Math.abs(getCenter(b).cx - cx);
+      return distA - distB;
+    });
+  }
+
+  if (direction === 'up') {
+    candidates = boxes.filter((b) => {
+      const { cy: by } = getCenter(b);
+      return by < cy && isOverlappingHorizontally(activeBox, b);
+    });
+    candidates.sort((a, b) => {
+      const distA = Math.abs(getCenter(a).cy - cy);
+      const distB = Math.abs(getCenter(b).cy - cy);
+      return distA - distB;
+    });
+  }
+
+  if (direction === 'down') {
+    candidates = boxes.filter((b) => {
+      const { cy: by } = getCenter(b);
+      return by > cy && isOverlappingHorizontally(activeBox, b);
+    });
+    candidates.sort((a, b) => {
+      const distA = Math.abs(getCenter(a).cy - cy);
+      const distB = Math.abs(getCenter(b).cy - cy);
+      return distA - distB;
+    });
+  }
+
+  // Return the first candidate if it exists
+  return candidates.length > 0 ? candidates[0] : null;
 }
 
 function splitNode(
@@ -88,10 +235,11 @@ interface TabGroupStore {
     tabGroup?: TabGroup
   ) => void;
   removeTabGroup: (tabGroupId: string) => void;
+  handleNavigation: (direction: 'left' | 'right' | 'up' | 'down') => void;
   layout: {
     split: {
-      vertical: () => void;
-      horizontal: () => void;
+      vertical: (tabId?: string) => void;
+      horizontal: (tabId?: string) => void;
     };
   };
 }
@@ -202,7 +350,9 @@ export const useTabGroupStore = create<TabGroupStore>((set, get) => ({
       // We remove the tab from the dom so we dont have webview garbage
       document.getElementById(`webview-portal-root${tabId}`)?.remove();
       unregisterWebviewRef(tabId);
-      const newLayout = removeNode(activeTabGroup.layout, tabId);
+      // Here we cast to MosaicNode<string>, because the new layout can not be null
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      const newLayout = removeNode(activeTabGroup.layout, tabId) as MosaicNode<string>;
 
       return {
         tabGroups: state.tabGroups.map((group) =>
@@ -251,7 +401,7 @@ export const useTabGroupStore = create<TabGroupStore>((set, get) => ({
   },
   layout: {
     split: {
-      vertical: (): void => {
+      vertical: (tabId?: string): void => {
         set((state) => {
           const activeTabGroupId = state.activeTabGroup;
 
@@ -268,10 +418,12 @@ export const useTabGroupStore = create<TabGroupStore>((set, get) => ({
           }
 
           const newTab = createTab(); // Create a new tab
+
+          console.log(tabId ?? activeTabGroup.active.id);
           const updatedLayout = splitNode(
             'column',
             activeTabGroup.layout,
-            activeTabGroup.active.id,
+            tabId ?? activeTabGroup.active.id,
             newTab.id
           );
 
@@ -289,7 +441,7 @@ export const useTabGroupStore = create<TabGroupStore>((set, get) => ({
           };
         });
       },
-      horizontal: (): void => {
+      horizontal: (tabId?: string): void => {
         set((state) => {
           const activeTabGroupId = state.activeTabGroup;
 
@@ -309,7 +461,7 @@ export const useTabGroupStore = create<TabGroupStore>((set, get) => ({
           const updatedLayout = splitNode(
             'row',
             activeTabGroup.layout,
-            activeTabGroup.active.id,
+            tabId ?? activeTabGroup.active.id,
             newTab.id
           );
 
@@ -328,6 +480,37 @@ export const useTabGroupStore = create<TabGroupStore>((set, get) => ({
         });
       }
     }
+  },
+  handleNavigation: (direction: 'left' | 'right' | 'up' | 'down'): void => {
+    const state = get();
+    if (!state.activeTabGroup) return;
+
+    const activeTabGroup = state.getTabGroupById(state.activeTabGroup);
+    if (!activeTabGroup) return;
+
+    const layout = activeTabGroup.layout;
+    if (!layout) return;
+
+    // Flatten the entire layout into bounding boxes
+    const boxes = generateLayoutBoxes(layout);
+
+    // Find the active tab's bounding box
+    const activeTabId = activeTabGroup.active.id;
+    const activeBox = boxes.find((b) => b.id === activeTabId);
+    if (!activeBox) return;
+
+    // Find the neighbor in the specified direction
+    const neighbor = findNeighborInDirection(boxes, activeBox, direction);
+    if (!neighbor) {
+      // Edge condition - no neighbor in that direction
+      return;
+    }
+
+    // If found, set that neighbor's tab as active
+    set(() => {
+      state.setActiveTab(neighbor.id, activeTabGroup);
+      return {};
+    });
   }
 }));
 

@@ -1,20 +1,28 @@
-import { X, Info, ArrowLeft, ArrowRight, RefreshCcw } from 'lucide-react';
+import {
+  X,
+  ArrowLeft,
+  ArrowRight,
+  RefreshCcw,
+  SquareSplitHorizontal,
+  SquareSplitVertical
+} from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 import { useTabs } from '@renderer/hooks/use-tabs';
 import { useWebview } from '@renderer/contexts/WebviewContext';
-import useTabGroupStore from '@renderer/store/tabs';
+import useTabGroupStore, { TabGroup } from '@renderer/store/tabs';
 
 interface ToolbarProps {
   id: string;
   title: string | undefined;
+  tabGroup: TabGroup;
 }
 
-export const Toolbar = ({ id, title }: ToolbarProps): JSX.Element => {
+export const Toolbar = ({ id, title, tabGroup }: ToolbarProps): JSX.Element => {
   const [canGoBack, setCanGoBack] = useState(false);
   const [canGoForward, setCanGoForward] = useState(false);
   const { unregisterWebviewRef } = useWebview();
-  const { removeTab } = useTabGroupStore();
+  const { removeTab, layout } = useTabGroupStore();
   const { getTab } = useTabs();
   const webviewRef = useRef<Electron.WebviewTag | null>(getTab(id));
 
@@ -70,11 +78,16 @@ export const Toolbar = ({ id, title }: ToolbarProps): JSX.Element => {
           <RefreshCcw width={15} />
         </button>
       </div>
-      <p className="">{title}</p>
+      <p className="truncate">
+        {title}{' '}
+        <span className="text-green-600">{id === tabGroup.active.id ? '- Active' : ''}</span>
+      </p>
       <div className="flex gap-3">
-        <div style={{ width: 17 }}></div>
-        <button onClick={() => alert(`Action for ${id}`)}>
-          <Info width={17} />
+        <button onClick={() => layout.split.horizontal(id)}>
+          <SquareSplitHorizontal width={17} />
+        </button>
+        <button onClick={() => layout.split.vertical(id)}>
+          <SquareSplitVertical width={17} />
         </button>
         <button onClick={() => removeTab(id, unregisterWebviewRef)}>
           <X width={17} />

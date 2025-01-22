@@ -1,6 +1,15 @@
 import path, { join } from 'path';
 
-import { app, BrowserWindow, ipcMain, session, webContents } from 'electron';
+import {
+  app,
+  BrowserWindow,
+  ipcMain,
+  session,
+  webContents,
+  Menu,
+  MenuItem,
+  clipboard
+} from 'electron';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import { WebExtensionBlocker } from '@ghostery/adblocker-webextension';
 
@@ -30,20 +39,16 @@ function createWindow(): void {
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36';
   mainWindow.webContents.setUserAgent(chromiumUserAgent);
 
-  mainWindow.webContents.openDevTools();
+  if (process.env.NODE_ENV === 'development') mainWindow.webContents.openDevTools();
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show();
   });
 
-  mainWindow.webContents.setWindowOpenHandler((details) => {
-    // shell.openExternal(details.url);
-    console.log('Intercepted new window URL:', details);
-    return { action: 'deny' };
-  });
+  mainWindow.webContents.setWindowOpenHandler((_details) => ({ action: 'deny' }));
 
   if (settingsStore.get('settings.adBlocker')) {
-    WebExtensionBlocker.fromPrebuiltAdsAndTracking().then((blocker) => {
+    void WebExtensionBlocker.fromPrebuiltAdsAndTracking().then((blocker) => {
       blocker.enableBlockingInBrowser(mainWindow);
     });
   } else {
@@ -53,18 +58,17 @@ function createWindow(): void {
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL']);
+    void mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL']);
   } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'));
+    void mainWindow.loadFile(join(__dirname, '../renderer/index.html'));
   }
 
-  ipcMain.on('webview-ready', (_event, webViewId) => {
+  ipcMain.on('webview-ready', (_event, webViewId: number) => {
     const wv = webContents.fromId(webViewId);
 
-    const handleBeforeInputEvent = (_event, input) => {
+    const handleBeforeInputEvent = (_, input): void => {
       if (input.type !== 'keyDown') return;
       if (input.meta && input.key === 'Escape') {
-        console.log('Meta+Escape detected, blurring webview');
         mainWindow.webContents.send('blur-tab');
         return;
       }
@@ -77,17 +81,49 @@ function createWindow(): void {
         return wv?.navigationHistory.goForward();
     };
 
+    const handleContextMenu = (
+      _: object,
+      infos: Electron.Event<Electron.ContextMenuParams>
+    ): void => {
+      const url = infos.linkURL !== '' ? infos.linkURL : null;
+      const selectionText: string | null = infos.selectionText !== '' ? infos.selectionText : null;
+      const menu = new Menu();
+
+      url &&
+        menu.append(
+          new MenuItem({
+            label: `Open Link in New Tab`,
+            click: (): void => {
+              mainWindow.webContents.send('create-tab', url);
+            }
+          })
+        );
+      selectionText &&
+        menu.append(
+          new MenuItem({
+            label: `Copy Text`,
+            click: (): void => {
+              clipboard.write({ text: selectionText });
+            }
+          })
+        );
+      menu.popup();
+    };
+
     wv?.on('before-input-event', handleBeforeInputEvent);
+    //@ts-ignore This needs to be handled this way
+    wv?.on('context-menu', handleContextMenu);
 
     // Neue Fenster blocken
     wv?.setWindowOpenHandler((details) => {
-      console.log('Blockiere neues Fenster von WebView:', details.url);
       mainWindow.webContents.send('create-tab', details.url);
       return { action: 'deny' };
     });
 
     wv?.once('destroyed', () => {
       wv.removeListener('before-input-event', handleBeforeInputEvent);
+      //@ts-ignore This needs to be handled this way
+      wv.removeListener('context-menu', handleContextMenu);
     });
   });
 }
@@ -109,8 +145,6 @@ void app.whenReady().then(() => {
   });
 
   // IPC test
-  ipcMain.on('ping', () => console.log('pong'));
-
   ipcMain.on('minimize', () => {
     const window = BrowserWindow.getFocusedWindow();
     if (window) window.minimize();
@@ -138,7 +172,7 @@ void app.whenReady().then(() => {
     settingsStore.set(key, value);
   });
 
-  ipcMain.handle('store-get', (_event, key: string) => settingsStore.get(key));
+  ipcMain.handle('store-get', (_event, key: string) => settingsStore.get(key) as string);
 
   createWindow();
 
@@ -153,7 +187,7 @@ void app.whenReady().then(() => {
   );
 
   try {
-    void session.defaultSession.loadExtension(extensionPath);
+    void session.defaultSession.loadExtension(extensionPath as string);
     console.log('React Developer Tools loaded successfully.');
   } catch (err) {
     console.error('Failed to load React Developer Tools:', err);

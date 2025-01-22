@@ -39,6 +39,7 @@ const TabGroupItem: FC<TabGroupItemProps> = ({
 
   const handleMouseDown = (): void => {
     clickTimeout = setTimeout(() => {
+      // eslint-disable-next-line react-compiler/react-compiler
       clickTimeout = null;
     }, 200); // Define a threshold for drag vs click
   };
@@ -47,7 +48,7 @@ const TabGroupItem: FC<TabGroupItemProps> = ({
     if (clickTimeout) {
       clearTimeout(clickTimeout);
       clickTimeout = null;
-      console.log('FUnction executed', executeFunction);
+      console.log('Function executed', executeFunction);
       executeFunction();
     }
   };
@@ -85,12 +86,14 @@ const TabGroupItem: FC<TabGroupItemProps> = ({
         >
           <div className={clsx(``, isOpen && 'pb-2')}>
             <div className="flex justify-center items-center gap-2 ">
-              <Folders width={45} />
+              <div className="bg-gray-700 bg-opacity-20 p-0.5 rounded-md px-1.5">
+                <Folders width={17} />
+              </div>
               <span className="truncate w-full text-left">{`${tabGroup.active.title} - Gruppe`}</span>
               <CollapsibleTrigger
                 asChild
                 onMouseDown={handleMouseDown}
-                onMouseUp={() => handleMouseUp(() => setIsOpen(!isOpen))}
+                onMouseUp={() => handleMouseUp(() => setIsOpen(!isOpen) as void)}
               >
                 <button className="z-30">
                   <ChevronsUpDown className="h-4 w-4" />
@@ -134,7 +137,12 @@ const TabGroupItem: FC<TabGroupItemProps> = ({
             }`}
           >
             <img src={'/default-favicon.png'} alt="Favicon" className="w-4 h-4 mr-2 hidden" />
-            <span className="truncate">{tab.title ?? tab.url}</span>
+            <div className="flex gap-2 items-center justify-start truncate">
+              <div className="bg-gray-700 bg-opacity-20 p-1 px-2 rounded-md">
+                {tab.title?.charAt(0).toUpperCase()}
+              </div>
+              <span className="truncate">{tab.title ?? tab.url}</span>
+            </div>
             <button
               className="text-red-500 ml-2 z-30"
               onMouseDown={handleMouseDown}

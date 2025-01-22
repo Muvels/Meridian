@@ -24,6 +24,9 @@ function createWindow(): void {
     height: 900,
     show: true,
     autoHideMenuBar: true,
+    transparent: true,
+    vibrancy: 'fullscreen-ui', // on MacOS
+    backgroundMaterial: 'acrylic', // on Windows 11
     titleBarStyle: 'default', // Keeps macOS window buttons
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {

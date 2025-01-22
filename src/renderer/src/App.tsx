@@ -138,7 +138,7 @@ function App(): JSX.Element {
   }, []);
 
   return (
-    <div style={{ backgroundColor }}>
+    <div style={{ backgroundColor, opacity: 10 }}>
       <button
         hidden={isPinned}
         onMouseEnter={() => setOpen(true)}
@@ -164,7 +164,7 @@ function App(): JSX.Element {
             className={clsx(
               'w-screen overflow-x-hidden',
               !isPinned && 'absolute p-2',
-              isPinned && 'py-3 pr-3'
+              isPinned && 'py-2 pr-2'
             )}
           >
             <div id="no-drag" className="rounded-lg overflow-hidden">
@@ -173,7 +173,7 @@ function App(): JSX.Element {
                   <div
                     className={clsx(
                       'w-full flex justify-center items-center',
-                      isPinned ? 'h-[calc(100vh-2*1rem)]' : 'h-[calc(100vh-1*1rem)]'
+                      isPinned ? 'h-[calc(100vh-1*1rem)]' : 'h-[calc(100vh-1*1rem)]'
                     )}
                   >
                     <MosaicView
@@ -189,7 +189,7 @@ function App(): JSX.Element {
                 <div
                   className={clsx(
                     'w-full bg-white overflow-auto',
-                    isPinned ? 'h-[calc(100vh-2*1rem)]' : 'h-[calc(100vh-1*1rem)]'
+                    isPinned ? 'h-[calc(100vh-1*1rem)]' : 'h-[calc(100vh-1*1rem)]'
                   )}
                 >
                   <Settings />
@@ -198,7 +198,7 @@ function App(): JSX.Element {
                 <div
                   className={clsx(
                     'w-full bg-white overflow-auto',
-                    isPinned ? 'h-[calc(100vh-2*1rem)]' : 'h-[calc(100vh-1*1rem)]'
+                    isPinned ? 'h-[calc(100vh-1*1rem)]' : 'h-[calc(100vh-1*1rem)]'
                   )}
                 ></div>
               )}

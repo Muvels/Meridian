@@ -108,7 +108,7 @@ export const AppSidebar = (props: SidebarProps): JSX.Element => {
             <PanelRightClose />
           </Button>
         </NativeControls>
-        <Button className="bg-opacity-10 border-none mx-2 z-10">
+        <Button className="bg-opacity-10 border-none mx-2 z-10 rounded-2xl">
           <div className="flex justify-between items-center w-full">
             <Search className="text-[#8a793f]" />
             <p

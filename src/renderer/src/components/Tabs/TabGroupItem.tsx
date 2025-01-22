@@ -80,15 +80,16 @@ const TabGroupItem: FC<TabGroupItemProps> = ({
           open={isOpen}
           onOpenChange={setIsOpen}
           key={tabGroup.id}
-          className={`p-2 cursor-pointer rounded-md ${
-            activeTabGroup?.id === tabGroup.id ? 'bg-white text-black' : ''
+          className={`px-2 py-1 cursor-pointer rounded-xl ${
+            activeTabGroup?.id === tabGroup.id ? 'bg-gray-100 text-black bg-opacity-40' : ''
           }`}
         >
           <div className={clsx(``, isOpen && 'pb-2')}>
             <div className="flex justify-center items-center gap-2 ">
-              <div className="bg-gray-700 bg-opacity-20 p-0.5 rounded-md px-1.5">
+              <div className="bg-gray-700 bg-opacity-20 p-0.5 rounded-md px-1">
                 <Folders width={17} />
               </div>
+              /
               <span className="truncate w-full text-left">{`${tabGroup.active.title} - Gruppe`}</span>
               <CollapsibleTrigger
                 asChild
@@ -132,15 +133,16 @@ const TabGroupItem: FC<TabGroupItemProps> = ({
         tabGroup.tabs.map((tab) => (
           <div
             key={tab.id}
-            className={`flex justify-between items-center p-2 cursor-pointer rounded-md ${
-              activeTabGroup?.id === tabGroup.id ? 'bg-white text-black' : ''
+            className={`flex justify-between items-center py-2 px-2 cursor-pointer rounded-xl ${
+              activeTabGroup?.id === tabGroup.id ? 'bg-gray-100 text-black bg-opacity-40' : ''
             }`}
           >
             <img src={'/default-favicon.png'} alt="Favicon" className="w-4 h-4 mr-2 hidden" />
             <div className="flex gap-2 items-center justify-start truncate">
-              <div className="bg-gray-700 bg-opacity-20 p-1 px-2 rounded-md">
+              <div className="bg-gray-700 bg-opacity-20 px-1.5 rounded-full">
                 {tab.title?.charAt(0).toUpperCase()}
               </div>
+              /
               <span className="truncate">{tab.title ?? tab.url}</span>
             </div>
             <button

@@ -14,7 +14,16 @@ interface SettingsProps {
   children?: ReactNode;
 }
 
-const suggestedColors = ['#b7a153', '#7393B3', '#d1b6c6', '#cccccc'];
+const suggestedColors = [
+  '#b7a153',
+  '#7393B3',
+  '#d1b6c6',
+  '#cccccc',
+  '#CAF1DE',
+  '#ACDDDE',
+  '#F7D8BA',
+  '#ECDEAA'
+];
 
 const Settings: React.FC<SettingsProps> = () => {
   const { backgroundColor, adBlocker, setBackgroundColor, setAdBlocker, hotkeys, setHotkey } =

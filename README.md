@@ -1,17 +1,17 @@
-# Prospect
+# Meridian
 
-A simple web browser built with Electron and React. [Read article.
-](https://www.linkedin.com/pulse/building-web-browser-react-electron-miguel-rivas-perez-ja1kc/)
-![](screenshot.png)
+A web browser built with Electron and React.
+
+![](resources/readme-picture-1.png)
+![](resources/readme-picture-2.png)
+
+One of the main reasons why, created this browser, is to test how good a browser based on electron could be.
 
 ## Credits
 
-- [Bootswatch](https://bootswatch.com/) for Cerulean theme for Bootstrap.
-- [Bootstrap Icons](https://icons.getbootstrap.com/)
+This Browser is a tribute to the fading Arc Browser, which isnt the focus of the Browser Company anylonger. Thats why i wanted an Open Source alternative.
 
-## Recommended IDE Setup
 
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
 
 ## Project Setup
 

@@ -10,6 +10,8 @@ interface api {
   tab: {
     onCreate: (callback: (url: string) => void) => void;
     offCreate: (callback: (url: string) => void) => void;
+    onSplit: (callback: (url: string, type: 'row' | 'column') => void) => void;
+    offSplit: (callback: (url: string, type: 'row' | 'column') => void) => void;
     onBlur: (callback: () => void) => void;
     offBlur: (callback: () => void) => void;
   };

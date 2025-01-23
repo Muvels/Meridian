@@ -240,13 +240,14 @@ interface TabGroupStore {
     split: {
       vertical: (tabId?: string) => void;
       horizontal: (tabId?: string) => void;
+      newSplit: (pUrl: string, type: 'row' | 'column') => void;
     };
   };
 }
 
 export const createTab = (url?: string): Tab => ({
   id: uuid(),
-  url: url ?? 'https://google.com',
+  url: url ?? 'https://duckduckgo.com/',
   title: undefined,
   icon: undefined
 });
@@ -266,7 +267,7 @@ export const useTabGroupStore = create<TabGroupStore>((set, get) => ({
         layout: actualTab.id
       };
       return {
-        tabGroups: [...state.tabGroups, newTabGroup],
+        tabGroups: [newTabGroup, ...state.tabGroups],
         activeTabGroup: newTabGroup.id
       };
     }),
@@ -419,7 +420,6 @@ export const useTabGroupStore = create<TabGroupStore>((set, get) => ({
 
           const newTab = createTab(); // Create a new tab
 
-          console.log(tabId ?? activeTabGroup.active.id);
           const updatedLayout = splitNode(
             'column',
             activeTabGroup.layout,
@@ -462,6 +462,44 @@ export const useTabGroupStore = create<TabGroupStore>((set, get) => ({
             'row',
             activeTabGroup.layout,
             tabId ?? activeTabGroup.active.id,
+            newTab.id
+          );
+
+          return {
+            tabGroups: state.tabGroups.map((group) =>
+              group.id === activeTabGroupId
+                ? {
+                    ...group,
+                    tabs: [...group.tabs, newTab], // Add the new tab
+                    layout: updatedLayout, // Update the layout
+                    active: newTab // Set the new tab as active
+                  }
+                : group
+            )
+          };
+        });
+      },
+      newSplit: (pUrl: string, type: 'row' | 'column'): void => {
+        set((state) => {
+          const activeTabGroupId = state.activeTabGroup;
+
+          if (!activeTabGroupId) {
+            console.warn('No active tab group to split.');
+            return state;
+          }
+
+          const activeTabGroup = state.tabGroups.find((group) => group.id === activeTabGroupId);
+
+          if (!activeTabGroup) {
+            console.warn('Active tab group not found.');
+            return state;
+          }
+
+          const newTab = createTab(pUrl);
+          const updatedLayout = splitNode(
+            type,
+            activeTabGroup.layout,
+            activeTabGroup.active.id,
             newTab.id
           );
 

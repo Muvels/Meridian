@@ -142,8 +142,7 @@ const TabGroupItem: FC<TabGroupItemProps> = ({
               <div className="bg-gray-700 bg-opacity-20 px-1.5 rounded-full">
                 {tab.title?.charAt(0).toUpperCase()}
               </div>
-              /
-              <span className="truncate">{tab.title ?? tab.url}</span>
+              /<span className="truncate">{tab.title ?? tab.url}</span>
             </div>
             <button
               className="text-red-500 ml-2 z-30"

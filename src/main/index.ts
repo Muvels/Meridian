@@ -25,8 +25,6 @@ function createWindow(): void {
     show: true,
     autoHideMenuBar: true,
     transparent: true,
-    vibrancy: 'fullscreen-ui', // on MacOS
-    backgroundMaterial: 'acrylic', // on Windows 11
     titleBarStyle: 'default', // Keeps macOS window buttons
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
@@ -96,6 +94,29 @@ function createWindow(): void {
         menu.append(
           new MenuItem({
             label: `Open Link in New Tab`,
+            click: (): void => {
+              mainWindow.webContents.send('create-tab', url);
+            }
+          })
+        );
+      url &&
+        menu.append(
+          new MenuItem({
+            label: `Open Link in Split View`,
+            submenu: [
+              {
+                label: 'Vertical Split',
+                click: (): void => {
+                  mainWindow.webContents.send('create-split', url, 'column');
+                }
+              },
+              {
+                label: 'Horizontal Split',
+                click: (): void => {
+                  mainWindow.webContents.send('create-split', url, 'row');
+                }
+              }
+            ],
             click: (): void => {
               mainWindow.webContents.send('create-tab', url);
             }

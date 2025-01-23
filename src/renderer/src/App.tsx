@@ -60,11 +60,19 @@ function App(): JSX.Element {
     const handleCreate = (pUrl: string): void => {
       addTabGroup(pUrl);
     };
+
+    const handleSplit = (pUrl: string, type: 'row' | 'column'): void => {
+      layout.split.newSplit(pUrl, type);
+    };
+
     window.nativeApi.tab.onCreate(handleCreate);
+    window.nativeApi.tab.onSplit(handleSplit);
+
     return () => {
       window.nativeApi.tab.offCreate(handleCreate);
+      window.nativeApi.tab.offSplit(handleSplit);
     };
-  }, [addTabGroup]);
+  }, [addTabGroup, layout.split]);
 
   useEffect(() => {
     webviewRef.current = getTab(activeTabGroup?.active.id);
@@ -143,7 +151,7 @@ function App(): JSX.Element {
         hidden={isPinned}
         onMouseEnter={() => setOpen(true)}
         onClick={() => setOpen(true)}
-        className="absolute top-0 left-0 h-full w-10 z-50"
+        className="absolute top-0 left-0 h-full w-7 z-50"
       />
       <div
         hidden={isPinned || !isOpen}
@@ -153,7 +161,6 @@ function App(): JSX.Element {
       <Drawer>
         <DrawerContent id="no-drag" style={{ backgroundColor }}>
           <AddressBar changeUrl={handleUrlChange} url={activeTabGroup?.active.url ?? ''} />
-
           <DrawerFooter></DrawerFooter>
         </DrawerContent>
 

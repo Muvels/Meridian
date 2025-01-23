@@ -22,6 +22,16 @@ const api = {
       ipcRenderer.removeAllListeners('create-tab');
     },
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+    onSplit: (callback) =>
+      ipcRenderer.on(
+        'create-split',
+        (_event, value, type) =>
+          callback(value, type) as (value: string, type: 'vertical' | 'horizontal') => void
+      ),
+    offSplit: (): void => {
+      ipcRenderer.removeAllListeners('create-split');
+    },
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     onBlur: (callback) => ipcRenderer.on('blur-tab', (_event) => callback() as () => void),
     offBlur: (): void => {
       ipcRenderer.removeAllListeners('blur-tab');

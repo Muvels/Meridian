@@ -1,4 +1,4 @@
-import { Search, RotateCcw, Undo2, Redo2, PanelRightClose, Settings } from 'lucide-react';
+import { Search, RotateCcw, PanelRightClose, Settings, ArrowLeft, ArrowRight } from 'lucide-react';
 import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
 
@@ -128,14 +128,14 @@ export const AppSidebar = (props: SidebarProps): JSX.Element => {
             onClick={handleUndo}
             disabled={!canGoBack}
           >
-            <Undo2 />
+            <ArrowLeft />
           </Button>
           <Button
             className="bg-transparent border-none shadow-none w-1/2"
             onClick={handleRedo}
             disabled={!canGoForward}
           >
-            <Redo2 />
+            <ArrowRight />
           </Button>
           <Button className="bg-transparent border-none shadow-none w-1/2" onClick={handleReload}>
             <RotateCcw />

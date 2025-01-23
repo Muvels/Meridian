@@ -94,10 +94,6 @@ const Tabs: React.FC = () => {
                   <DrawerTrigger>Show full URL</DrawerTrigger>
                   <ContextMenuShortcut></ContextMenuShortcut>
                 </ContextMenuItem>
-                <ContextMenuItem className="hover:bg-gray-200" inset>
-                  {tabGroup.id}
-                  <ContextMenuShortcut></ContextMenuShortcut>
-                </ContextMenuItem>
               </ContextMenuContent>
             </ContextMenu>
           ))}

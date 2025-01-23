@@ -12,6 +12,7 @@ import {
 } from 'electron';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import { WebExtensionBlocker } from '@ghostery/adblocker-webextension';
+import { ElectronBlocker } from '@ghostery/adblocker-electron';
 
 import icon from '../../resources/icon.png?asset';
 
@@ -49,8 +50,8 @@ function createWindow(): void {
   mainWindow.webContents.setWindowOpenHandler((_details) => ({ action: 'deny' }));
 
   if (settingsStore.get('settings.adBlocker')) {
-    void WebExtensionBlocker.fromPrebuiltAdsAndTracking().then((blocker) => {
-      blocker.enableBlockingInBrowser(mainWindow);
+    void ElectronBlocker.fromPrebuiltAdsAndTracking().then((blocker) => {
+      blocker.enableBlockingInSession(session.defaultSession);
     });
   } else {
     console.log('No ad blocker active');

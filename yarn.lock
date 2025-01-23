@@ -471,17 +471,33 @@
   resolved "https://registry.npmjs.org/@floating-ui/utils/-/utils-0.2.8.tgz"
   integrity sha512-kym7SodPp8/wloecOpcmSnWJsK7M0E5Wg8UcFA+uO4B9s5d0ywXOEro/8HM9x0rW+TljRzul/14UYz3TleT3ig==
 
-"@ghostery/adblocker-content@^2.3.1":
-  version "2.3.1"
-  resolved "https://registry.npmjs.org/@ghostery/adblocker-content/-/adblocker-content-2.3.1.tgz"
-  integrity sha512-8ZTY1sEE218b0EMk3Q9fv/cWwUxunSCyBOaKuviEmJY5EyvPa1VbGPuTq/Qdvo1kduD8nLEzCwgWhcT3F3TT0Q==
+"@ghostery/adblocker-content@^2.3.1", "@ghostery/adblocker-content@^2.3.2":
+  version "2.3.2"
+  resolved "https://registry.npmjs.org/@ghostery/adblocker-content/-/adblocker-content-2.3.2.tgz"
+  integrity sha512-5LJxHx8l1gIhk1DthgKI/VvGlg0omx4OHEA6T5DHK1VdtHQ5qEMrTTy/DKD4zc7ZTg36KObwx6y8XzL5TqArTA==
   dependencies:
-    "@ghostery/adblocker-extended-selectors" "^2.3.1"
+    "@ghostery/adblocker-extended-selectors" "^2.3.2"
 
-"@ghostery/adblocker-extended-selectors@^2.3.1":
-  version "2.3.1"
-  resolved "https://registry.npmjs.org/@ghostery/adblocker-extended-selectors/-/adblocker-extended-selectors-2.3.1.tgz"
-  integrity sha512-hDNiOd/1V4b6NTkNnMkZUUmhMwwo8+5rpSUtQUFzCCCzy+v5izHt4rBr2RGeK5L1pNq0NbFxZJjBHFDbiQiS1A==
+"@ghostery/adblocker-electron-preload@^2.3.2":
+  version "2.3.2"
+  resolved "https://registry.npmjs.org/@ghostery/adblocker-electron-preload/-/adblocker-electron-preload-2.3.2.tgz"
+  integrity sha512-xCKLzyv4BdyecX//GafwcfCtkhUrqUz/qSZ5fMrVLX74wZm6WubtKjxXF4pGOD7vMKqUG4SW03CpWSeYNxsBpQ==
+  dependencies:
+    "@ghostery/adblocker-content" "^2.3.2"
+
+"@ghostery/adblocker-electron@^2.3.2":
+  version "2.3.2"
+  resolved "https://registry.npmjs.org/@ghostery/adblocker-electron/-/adblocker-electron-2.3.2.tgz"
+  integrity sha512-gduMTVEfdzT3aQyrknUt2SPqXzfq6CyRyXlW4OdF+yPSKOq46iq2V0nPuo8gLA06RvhOZ3BcRCwvYuEtk2poiQ==
+  dependencies:
+    "@ghostery/adblocker" "^2.3.2"
+    "@ghostery/adblocker-electron-preload" "^2.3.2"
+    tldts-experimental "^6.0.14"
+
+"@ghostery/adblocker-extended-selectors@^2.3.2":
+  version "2.3.2"
+  resolved "https://registry.npmjs.org/@ghostery/adblocker-extended-selectors/-/adblocker-extended-selectors-2.3.2.tgz"
+  integrity sha512-TKsYZbG+oe4soqwt+lec54intirLDchboI7Umgar8GWzXV+ONv57DdOcSDddE93n1DtX85iqUrLtrJs4QFGnJA==
 
 "@ghostery/adblocker-webextension@^2.3.1":
   version "2.3.1"
@@ -493,13 +509,13 @@
     tldts-experimental "^6.0.14"
     webextension-polyfill "^0.12.0"
 
-"@ghostery/adblocker@^2.3.1":
-  version "2.3.1"
-  resolved "https://registry.npmjs.org/@ghostery/adblocker/-/adblocker-2.3.1.tgz"
-  integrity sha512-6k8ZFHjYII54a32qrKwhnTbrPfR+KPgM6GlyAiEm8OCZoewN1cfBfSw5GVpzaAB2yJ4DzazmP8Wq/UBvEk5mHg==
+"@ghostery/adblocker@^2.3.1", "@ghostery/adblocker@^2.3.2":
+  version "2.3.2"
+  resolved "https://registry.npmjs.org/@ghostery/adblocker/-/adblocker-2.3.2.tgz"
+  integrity sha512-AtTLfyVyV7ILJuq2IQgV+Hx0deZym1+KoTcM2vC60h6aXfE+sKgTO1mYnxE3UUC7aWcZswKKJCWZAtuHwr+rtQ==
   dependencies:
-    "@ghostery/adblocker-content" "^2.3.1"
-    "@ghostery/adblocker-extended-selectors" "^2.3.1"
+    "@ghostery/adblocker-content" "^2.3.2"
+    "@ghostery/adblocker-extended-selectors" "^2.3.2"
     "@remusao/guess-url-type" "^1.3.0"
     "@remusao/small" "^1.2.1"
     "@remusao/smaz" "^1.9.1"
@@ -2601,7 +2617,7 @@ electron-vite@^2.3.0:
     magic-string "^0.30.10"
     picocolors "^1.0.1"
 
-electron@^33.2.1, electron@>=13.0.0:
+electron@^33.2.1, electron@>=13.0.0, electron@>11:
   version "33.2.1"
   resolved "https://registry.npmjs.org/electron/-/electron-33.2.1.tgz"
   integrity sha512-SG/nmSsK9Qg1p6wAW+ZfqU+AV8cmXMTIklUL18NnOKfZLlum4ZsDoVdmmmlL39ZmeCaq27dr7CgslRPahfoVJg==
@@ -4821,7 +4837,7 @@ react-dnd@^16.0.1:
     fast-deep-equal "^3.1.3"
     hoist-non-react-statics "^3.3.2"
 
-"react-dom@^16.14.0 || ^17.0.2 || ^18.0.0", "react-dom@^16.8 || ^17.0 || ^18.0", "react-dom@^16.8 || ^17.0 || ^18.0 || ^19.0", "react-dom@^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc", "react-dom@^16.8 || 17 || 18", "react-dom@^16.8.0 || ^17 || ^18", react-dom@^18.0.0, react-dom@^18.2.0, react-dom@>=16.6.0, react-dom@>=16.8.0, react-dom@>=16.8.1:
+"react-dom@^16.14.0 || ^17.0.2 || ^18.0.0", "react-dom@^16.8 || ^17.0 || ^18.0", "react-dom@^16.8 || ^17.0 || ^18.0 || ^19.0", "react-dom@^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc", "react-dom@^16.8 || 17 || 18", "react-dom@^16.8.0 || ^17 || ^18", react-dom@^18.0.0, react-dom@^18.2.0, react-dom@>=16.6.0, react-dom@>=16.8.0:
   version "18.2.0"
   resolved "https://registry.npmjs.org/react-dom/-/react-dom-18.2.0.tgz"
   integrity sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==
@@ -4833,11 +4849,6 @@ react-fast-compare@^3.0.1:
   version "3.2.2"
   resolved "https://registry.npmjs.org/react-fast-compare/-/react-fast-compare-3.2.2.tgz"
   integrity sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ==
-
-react-hotkeys-hook@^4.6.1:
-  version "4.6.1"
-  resolved "https://registry.npmjs.org/react-hotkeys-hook/-/react-hotkeys-hook-4.6.1.tgz"
-  integrity sha512-XlZpbKUj9tkfgPgT9gA+1p7Ey6vFIZHttUjPqpTdyT5nqQ8mHL7elxvSbaC+dpSiHUSmr21Ya1mDxBZG3aje4Q==
 
 react-is@^16.13.1, react-is@^16.7.0:
   version "16.13.1"
@@ -4929,7 +4940,7 @@ react-uid@^2.3.3:
   dependencies:
     tslib "^2.0.0"
 
-"react@^16.14.0 || ^17.0.2 || ^18.0.0", "react@^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0-rc", "react@^16.8 || ^17.0 || ^18.0", "react@^16.8 || ^17.0 || ^18.0 || ^19.0", "react@^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc", "react@^16.8 || 17 || 18", "react@^16.8.0 || ^17 || ^18", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react@^17.0.0 || ^18.0.0 || ^19.0.0", react@^18.0.0, react@^18.2.0, "react@>= 16.14", react@>=16, react@>=16.6.0, react@>=16.8.0, react@>=16.8.1, react@>=18.0.0:
+"react@^16.14.0 || ^17.0.2 || ^18.0.0", "react@^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0-rc", "react@^16.8 || ^17.0 || ^18.0", "react@^16.8 || ^17.0 || ^18.0 || ^19.0", "react@^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc", "react@^16.8 || 17 || 18", "react@^16.8.0 || ^17 || ^18", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react@^17.0.0 || ^18.0.0 || ^19.0.0", react@^18.0.0, react@^18.2.0, "react@>= 16.14", react@>=16, react@>=16.6.0, react@>=16.8.0, react@>=18.0.0:
   version "18.2.0"
   resolved "https://registry.npmjs.org/react/-/react-18.2.0.tgz"
   integrity sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==

@@ -11,7 +11,6 @@ import {
   clipboard
 } from 'electron';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
-import { WebExtensionBlocker } from '@ghostery/adblocker-webextension';
 import { ElectronBlocker } from '@ghostery/adblocker-electron';
 
 import icon from '../../resources/icon.png?asset';

@@ -2,7 +2,7 @@ export const webviewDebugger = (
   window: Window & typeof globalThis,
   webviewRef: React.MutableRefObject<Electron.WebviewTag | null>
 ): void => {
-  if (!window.electron) {
+  if (!window.electronApi) {
     // eslint-disable-next-line no-console
     console.error('❌ Electron is not available');
   } else {

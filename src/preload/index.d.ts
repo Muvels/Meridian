@@ -4,6 +4,7 @@ interface api {
   maximize: () => void;
   minimize: () => void;
   close: () => void;
+  suggest: (q: string) => Promise<{ phrase: string }[]>;
   activeTab: {
     ready: (wcId: number) => void;
   };

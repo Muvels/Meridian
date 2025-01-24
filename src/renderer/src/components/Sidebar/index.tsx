@@ -23,10 +23,11 @@ import NativeControls from '../NativeControls';
 
 interface SidebarProps {
   currentTab: string | null;
+  handleOpenCommandBox: (url: string) => void;
 }
 
 export const AppSidebar = (props: SidebarProps): JSX.Element => {
-  const { currentTab } = props;
+  const { currentTab, handleOpenCommandBox } = props;
   const { isPinned, isOpen, setPinned, isSettings, setSettings } = useSidebarStore();
   const { backgroundColor } = useSettingsStore();
   const [canGoBack, setCanGoBack] = useState(false);
@@ -108,7 +109,10 @@ export const AppSidebar = (props: SidebarProps): JSX.Element => {
             <PanelRightClose />
           </Button>
         </NativeControls>
-        <Button className="bg-opacity-10 border-none mx-2 z-10 rounded-2xl">
+        <Button
+          className="bg-opacity-10 border-none mx-2 z-10 rounded-2xl"
+          onClick={() => void handleOpenCommandBox(currentTab ? `!url ${currentTab}` : '')}
+        >
           <div className="flex justify-between items-center w-full">
             <Search className="text-[#8a793f]" />
             <p

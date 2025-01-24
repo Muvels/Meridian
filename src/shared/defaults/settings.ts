@@ -49,6 +49,7 @@ export const defaults = {
         print: 'ctrl+p',
         toggleUrlbar: 'meta+u',
         toggleSidebar: 'meta+s',
+        toggleCmd: 'meta+t',
         sidebarVisible: 's t',
         loseFocus: 'meta+esc',
         getFocus: 'a t'

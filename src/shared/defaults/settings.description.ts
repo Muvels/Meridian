@@ -148,6 +148,10 @@ export const settingsDescription = {
           name: 'Toggle Sidebar',
           description: 'Shows or hides the sidebar.'
         },
+        toggleCmd: {
+          name: 'Toggle Command Line',
+          description: 'Shows or hides the Command Line'
+        },
         sidebarVisible: {
           name: 'Show Sidebar',
           description: 'Displays the sidebar.'

@@ -11,6 +11,8 @@ const api = {
   maximize: (): void => ipcRenderer.send('maximize'),
   minimize: (): void => ipcRenderer.send('minimize'),
   close: (): void => ipcRenderer.send('close'),
+  suggest: (q: string): Promise<{ phrase: string }[]> =>
+    ipcRenderer.invoke('get-suggestions', q) as Promise<{ phrase: string }[]>,
   activeTab: {
     ready: (wcId: number): void => ipcRenderer.send('webview-ready', wcId)
   },

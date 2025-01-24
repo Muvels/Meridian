@@ -19,6 +19,7 @@ import 'react-mosaic-component/react-mosaic-component.css';
 import './assets/styles.css';
 import Settings from './components/Settings';
 import { useSettingsStore } from './store/settings';
+import { CommandBox } from './components/CommandBox';
 
 function App(): JSX.Element {
   // const { updateTabTitle, updateTabFavicon, updateTabUrl } = useTabStore()
@@ -33,16 +34,20 @@ function App(): JSX.Element {
     layout,
     handleNavigation
   } = useTabGroupStore();
-  const { isPinned, setOpen, isOpen, isSettings, setPinned } = useSidebarStore();
+  const { isPinned, setOpen, isOpen, isSettings, setPinned, isCmdOpen, setCmdOpen } =
+    useSidebarStore();
   const { backgroundColor, hotkeys } = useSettingsStore();
   const { getTab } = useTabs();
   const [isClickable, setIsClickable] = useState(true);
+  const [commandBoxUrl, setCommandBoxUrl] = useState('');
   const activeTabGroup = getTabGroupById(activeTabGroupId);
   const webviewRef = useRef<Electron.WebviewTag | null>(null);
 
   useHotkeys(hotkeys.Controls.getFocus, () => webviewRef.current?.focus());
   useHotkeys(hotkeys.Controls.toggleSidebar, () => setPinned(!isPinned));
   useHotkeys(hotkeys.Controls.sidebarVisible, () => setOpen(!isOpen));
+  useHotkeys(hotkeys.Controls.toggleCmd, () => setCmdOpen(!isCmdOpen));
+
   useHotkeys(hotkeys.Browser.reload, () => webviewRef.current?.reload());
   useHotkeys(hotkeys.Browser.undo, () => webviewRef.current?.goBack());
   useHotkeys(hotkeys.Browser.redo, () => webviewRef.current?.goForward());
@@ -145,6 +150,14 @@ function App(): JSX.Element {
     void (webviewRef && webviewRef.current && webviewRef.current.loadURL(url));
   }, []);
 
+  const handleOpenCommandBox = useCallback(
+    (url: string) => {
+      setCommandBoxUrl(url);
+      setCmdOpen(true);
+    },
+    [setCmdOpen]
+  );
+
   return (
     <div style={{ backgroundColor, opacity: 10 }}>
       <button
@@ -158,6 +171,11 @@ function App(): JSX.Element {
         onMouseEnter={() => setOpen(false)}
         className="absolute right-0 h-full w-4/5 z-50"
       />
+      {isCmdOpen ? (
+        <CommandBox defaultInput={commandBoxUrl} handleUrlChange={handleUrlChange} />
+      ) : (
+        ''
+      )}
       <Drawer>
         <DrawerContent id="no-drag" style={{ backgroundColor }}>
           <AddressBar changeUrl={handleUrlChange} url={activeTabGroup?.active.url ?? ''} />
@@ -165,7 +183,10 @@ function App(): JSX.Element {
         </DrawerContent>
 
         <SidebarProvider>
-          <AppSidebar currentTab={activeTabGroup?.active.url ?? ''} />
+          <AppSidebar
+            currentTab={activeTabGroup?.active.url ?? ''}
+            handleOpenCommandBox={handleOpenCommandBox}
+          />
           <div
             id="drag"
             className={clsx(

@@ -45,6 +45,7 @@ export type Hotkeys = {
     print: string;
     toggleUrlbar: string;
     toggleSidebar: string;
+    toggleCmd: string;
     sidebarVisible: string;
     loseFocus: string;
     getFocus: string;

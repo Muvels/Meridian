@@ -16,6 +16,7 @@ import { ElectronBlocker } from '@ghostery/adblocker-electron';
 import icon from '../../resources/icon.png?asset';
 
 import settingsStore from './utils/settingsStore';
+import { autocomplete } from './utils/autocomplete';
 
 function createWindow(): void {
   // Create the browser window.
@@ -197,6 +198,9 @@ void app.whenReady().then(() => {
   });
 
   ipcMain.handle('store-get', (_event, key: string) => settingsStore.get(key) as string);
+
+  ipcMain.handle('get-suggestions', async (_event, q: string) => await autocomplete(q));
+
 
   createWindow();
 

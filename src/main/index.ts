@@ -25,7 +25,7 @@ function createWindow(): void {
     height: 900,
     show: true,
     autoHideMenuBar: true,
-    transparent: true,
+    transparent: false,
     titleBarStyle: 'default', // Keeps macOS window buttons
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {

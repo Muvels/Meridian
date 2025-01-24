@@ -62,6 +62,10 @@ function App(): JSX.Element {
   webviewRef.current = getTab(activeTabGroup?.active.id);
 
   useEffect(() => {
+    !isCmdOpen && setCommandBoxUrl('');
+  }, [isCmdOpen]);
+
+  useEffect(() => {
     const handleCreate = (pUrl: string): void => {
       addTabGroup(pUrl);
     };

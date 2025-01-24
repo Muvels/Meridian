@@ -11,8 +11,6 @@ One of the main reasons why, created this browser, is to test how good a browser
 
 This Browser is a tribute to the fading Arc Browser, which isnt the focus of the Browser Company anylonger. Thats why i wanted an Open Source alternative.
 
-
-
 ## Project Setup
 
 ### Install

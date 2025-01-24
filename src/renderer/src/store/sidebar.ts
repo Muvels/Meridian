@@ -11,7 +11,6 @@ interface SidebarStoreType {
   setOpen: (value: boolean) => void;
   setSettings: (value: boolean) => void;
   setCmdOpen: (value) => void;
-
 }
 
 export const useSidebarStore = create<SidebarStoreType>((set) => ({

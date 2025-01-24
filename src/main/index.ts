@@ -201,7 +201,6 @@ void app.whenReady().then(() => {
 
   ipcMain.handle('get-suggestions', async (_event, q: string) => await autocomplete(q));
 
-
   createWindow();
 
   app.on('activate', function () {

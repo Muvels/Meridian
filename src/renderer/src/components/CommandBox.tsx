@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ArrowRight, Folders, Globe, Search, Slash, SlashSquare } from 'lucide-react';
+import { ArrowRight, Folders, Globe, Search, SlashSquare } from 'lucide-react';
+
 import {
   Command,
   CommandEmpty,
@@ -10,13 +11,10 @@ import {
   CommandSeparator,
   CommandShortcut
 } from '@renderer/components/ui/command';
-import useTabGroupStore, { TabGroup } from '@renderer/store/tabs';
+import useTabGroupStore from '@renderer/store/tabs';
 import { settingsDescription } from 'shared/defaults/settings.description';
 import { useSettingsStore } from '@renderer/store/settings';
-import { CommandLoading } from 'cmdk';
-import { useSidebar } from './ui/sidebar';
 import { useSidebarStore } from '@renderer/store/sidebar';
-import { url } from 'inspector';
 
 interface CommandBoxProps {
   defaultInput?: string;

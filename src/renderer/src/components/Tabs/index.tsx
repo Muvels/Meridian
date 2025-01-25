@@ -53,7 +53,7 @@ const Tabs: React.FC = () => {
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
-      <div className="flex flex-col gap-2 h-[calc(100vh-11rem)]">
+      <div className="flex flex-col gap-2 h-[calc(100vh-14rem)]">
         <button
           onClick={() => addTabGroup()}
           className="py-2 px-2 rounded-md flex justify-start items-center"

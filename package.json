@@ -1,6 +1,6 @@
 {
   "name": "prospect",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "description": "An Electron browser with React and TypeScript",
   "main": "./out/main/index.js",
   "author": "matteo",
@@ -89,11 +89,17 @@
     "vite": "^5.0.12"
   },
   "build": {
-  "appId": "com.matteo.meridian",
-  "publish": {
-    "provider": "github",
-    "owner": "Muvels",
-    "repo": "Meridian"
+    "appId": "com.matteo.meridian",
+    "mac": {
+      "sign": false
+    },
+    "win": {
+      "sign": false
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "Muvels",
+      "repo": "Meridian"
+    }
   }
-}
 }

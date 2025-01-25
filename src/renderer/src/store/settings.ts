@@ -45,6 +45,7 @@ export const useSettingsStore = create<SettingsStore>((set) => ({
     }));
   },
   setDarkTheme: (value): void => {
+    window.nativeApi.store.set('settings.darkTheme', value);
     set({ darkTheme: value });
   },
   initialize: (settings): void => {

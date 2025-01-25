@@ -36,7 +36,7 @@ function App(): JSX.Element {
   } = useTabGroupStore();
   const { isPinned, setOpen, isOpen, isSettings, setPinned, isCmdOpen, setCmdOpen } =
     useSidebarStore();
-  const { backgroundColor, hotkeys, darkTheme } = useSettingsStore();
+  const { backgroundColor, hotkeys } = useSettingsStore();
   const { getTab } = useTabs();
   const [isClickable, setIsClickable] = useState(true);
   const [commandBoxUrl, setCommandBoxUrl] = useState('');

@@ -5,6 +5,8 @@ interface api {
   minimize: () => void;
   close: () => void;
   suggest: (q: string) => Promise<{ phrase: string }[]>;
+  onCheckUpdate: (callback: () => void) => void;
+  offCheckUpdate: (callback: () => void) => void;
   activeTab: {
     ready: (wcId: number) => void;
   };

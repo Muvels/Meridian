@@ -13,6 +13,12 @@ const api = {
   close: (): void => ipcRenderer.send('close'),
   suggest: (q: string): Promise<{ phrase: string }[]> =>
     ipcRenderer.invoke('get-suggestions', q) as Promise<{ phrase: string }[]>,
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  onCheckUpdate: (callback) =>
+    ipcRenderer.on('update-available', (_event) => callback() as () => void),
+  offCheckUpdate: (): void => {
+    ipcRenderer.removeAllListeners('update-available');
+  },
   activeTab: {
     ready: (wcId: number): void => ipcRenderer.send('webview-ready', wcId)
   },

@@ -1,8 +1,8 @@
 import clsx from 'clsx';
 import React, { ReactNode } from 'react';
+import { Maximize2, Minus, X } from 'lucide-react';
 
 import { useSidebarStore } from '@renderer/store/sidebar';
-import { Maximize2, Minimize2Icon, Minus, X } from 'lucide-react';
 
 interface NativeControlsProps {
   children?: ReactNode; // `children` can be any valid React node

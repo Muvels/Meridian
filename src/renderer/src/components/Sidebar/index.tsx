@@ -1,4 +1,4 @@
-import { Search, RotateCcw, PanelRightClose, Settings, ArrowLeft, ArrowRight, PanelLeftDashed } from 'lucide-react';
+import { Search, RotateCcw, Settings, ArrowLeft, ArrowRight, PanelLeftDashed } from 'lucide-react';
 import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
 
@@ -20,6 +20,7 @@ import Tabs from '../Tabs';
 import { DrawerTrigger } from '../ui/drawer';
 import { Button } from '../ui/button';
 import NativeControls from '../NativeControls';
+import UpdateNotification from '../update-badge';
 
 interface SidebarProps {
   currentTab: string | null;
@@ -32,12 +33,16 @@ export const AppSidebar = (props: SidebarProps): JSX.Element => {
   const { backgroundColor, darkTheme } = useSettingsStore();
   const [canGoBack, setCanGoBack] = useState(false);
   const [canGoForward, setCanGoForward] = useState(false);
+  const [canUpdate, setCanUpdate] = useState(false);
+
   const { getTab } = useTabs();
   const webviewRef = useRef<Electron.WebviewTag | null>(null);
 
   useEffect(() => {
     webviewRef.current = getTab();
     const webview = webviewRef.current;
+
+    window.nativeApi.onCheckUpdate(() => setCanUpdate(true));
 
     if (window.electronApi && webviewRef && webview) {
       const updateNavButtons = (): void => {
@@ -48,7 +53,6 @@ export const AppSidebar = (props: SidebarProps): JSX.Element => {
       };
 
       const handleDomReady = (): void => updateNavButtons();
-
       if (webviewRef.current) {
         webviewRef.current.addEventListener('dom-ready', handleDomReady);
         webviewRef.current.addEventListener('did-navigate', updateNavButtons);
@@ -56,6 +60,7 @@ export const AppSidebar = (props: SidebarProps): JSX.Element => {
       }
 
       return () => {
+        window.nativeApi.offCheckUpdate(() => setCanUpdate(true));
         if (webviewRef.current) {
           webviewRef.current.removeEventListener('dom-ready', handleDomReady);
           webviewRef.current.removeEventListener('did-navigate', updateNavButtons);
@@ -106,7 +111,7 @@ export const AppSidebar = (props: SidebarProps): JSX.Element => {
             )}
             onClick={() => setPinned(!isPinned)}
           >
-            <PanelLeftDashed style={{ color: darkTheme ? 'white' : 'black' }}/>
+            <PanelLeftDashed style={{ color: darkTheme ? 'white' : 'black' }} />
           </Button>
         </NativeControls>
         <Button
@@ -160,6 +165,7 @@ export const AppSidebar = (props: SidebarProps): JSX.Element => {
             <div className="max-h-[calc(100vh-11rem)] overflow-y-auto overflow-x-hidden tabs-scroll-container">
               <Tabs />
             </div>
+            {canUpdate ? <UpdateNotification /> : <></>}
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

@@ -12,7 +12,7 @@ import { Drawer, DrawerContent, DrawerFooter } from './components/ui/drawer';
 import { useTabGroupStore } from './store/tabs';
 import { useTabs } from './hooks/use-tabs';
 import { MosaicView } from './components/Tiling/MosaicView';
-import { webviewDebugger } from './lib/helper';
+import { webviewDebugger, customScrollbarCSS } from './lib/helper';
 import '@blueprintjs/core/lib/css/blueprint.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import 'react-mosaic-component/react-mosaic-component.css';
@@ -36,7 +36,7 @@ function App(): JSX.Element {
   } = useTabGroupStore();
   const { isPinned, setOpen, isOpen, isSettings, setPinned, isCmdOpen, setCmdOpen } =
     useSidebarStore();
-  const { backgroundColor, hotkeys } = useSettingsStore();
+  const { backgroundColor, hotkeys, darkTheme } = useSettingsStore();
   const { getTab } = useTabs();
   const [isClickable, setIsClickable] = useState(true);
   const [commandBoxUrl, setCommandBoxUrl] = useState('');
@@ -102,6 +102,7 @@ function App(): JSX.Element {
       const handleIconChange = (_event, _newIcons): void => {};
 
       const handleDomReady = (): void => {
+        void webview.insertCSS(customScrollbarCSS);
         window.nativeApi.activeTab.ready(webview.getWebContentsId());
       };
       const handleKeyDown = (event: KeyboardEvent): void => {
@@ -199,7 +200,7 @@ function App(): JSX.Element {
               isPinned && 'py-2 pr-2'
             )}
           >
-            <div id="no-drag" className="rounded-lg overflow-hidden">
+            <div id="no-drag" className="rounded-lg overflow-hidden text-black">
               {activeTabGroup ? (
                 <div>
                   <div

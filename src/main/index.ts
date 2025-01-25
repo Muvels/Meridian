@@ -8,8 +8,10 @@ import {
   webContents,
   Menu,
   MenuItem,
-  clipboard
+  clipboard,
+  dialog
 } from 'electron';
+import { autoUpdater } from 'electron-updater';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import { ElectronBlocker } from '@ghostery/adblocker-electron';
 
@@ -17,6 +19,19 @@ import icon from '../../resources/icon.png?asset';
 
 import settingsStore from './utils/settingsStore';
 import { autocomplete } from './utils/autocomplete';
+
+const customScrollbarCSS = `
+  ::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent; /* Transparent background for the track */
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #ccc; /* Color of the scrollbar thumb */
+    border-radius: 0; /* No rounded corners for the thumb */
+  }
+`;
 
 function createWindow(): void {
   // Create the browser window.
@@ -64,6 +79,14 @@ function createWindow(): void {
   } else {
     void mainWindow.loadFile(join(__dirname, '../renderer/index.html'));
   }
+
+  autoUpdater.on('update-available', () => {
+    void dialog.showMessageBox(mainWindow, {
+      type: 'info',
+      title: 'Update Available',
+      message: 'A new version is available. It will be downloaded in the background.'
+    });
+  });
 
   ipcMain.on('webview-ready', (_event, webViewId: number) => {
     const wv = webContents.fromId(webViewId);
@@ -220,6 +243,8 @@ void app.whenReady().then(() => {
     console.error('Failed to load React Developer Tools:', err);
   }
 });
+
+void autoUpdater.checkForUpdatesAndNotify();
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

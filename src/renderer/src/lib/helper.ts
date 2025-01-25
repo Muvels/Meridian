@@ -27,6 +27,19 @@ export const webviewDebugger = (
   }
 };
 
+export const customScrollbarCSS = `
+  ::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent; /* Transparent background for the track */
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #ccc; /* Color of the scrollbar thumb */
+    border-radius: 0; /* No rounded corners for the thumb */
+  }
+`;
+
 export interface PageFaviconUpdatedEvent extends Event {
   favicons: string[];
 }

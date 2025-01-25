@@ -6,6 +6,7 @@ import { Hotkeys } from 'shared/types/hotkeys';
 export type settingsType = {
   settings: {
     backgroundColor: string;
+    darkTheme: boolean;
     adBlocker: boolean;
     hotkeys: Hotkeys;
   };

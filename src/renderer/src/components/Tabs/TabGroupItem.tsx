@@ -30,7 +30,7 @@ const TabGroupItem: FC<TabGroupItemProps> = ({
   deleteTab
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
-  const { backgroundColor } = useSettingsStore();
+  const { backgroundColor, darkTheme } = useSettingsStore();
   const { unregisterWebviewRef } = useWebview();
 
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
@@ -87,17 +87,23 @@ const TabGroupItem: FC<TabGroupItemProps> = ({
           <div className={clsx(``, isOpen && 'pb-2')}>
             <div className="flex justify-center items-center gap-2 ">
               <div className="bg-gray-700 bg-opacity-20 p-0.5 rounded-md px-1">
-                <Folders width={17} />
+                <Folders width={17} style={{ color: darkTheme ? 'white' : 'black' }} />
               </div>
-              /
-              <span className="truncate w-full text-left">{`${tabGroup.active.title} - Gruppe`}</span>
+              <span style={{ color: darkTheme ? 'white' : 'black' }}>/</span>
+              <span
+                className="truncate w-full text-left font-semibold"
+                style={{ color: darkTheme ? 'white' : 'black' }}
+              >{`${tabGroup.active.title} - Gruppe`}</span>
               <CollapsibleTrigger
                 asChild
                 onMouseDown={handleMouseDown}
                 onMouseUp={() => handleMouseUp(() => setIsOpen(!isOpen) as void)}
               >
                 <button className="z-30">
-                  <ChevronsUpDown className="h-4 w-4" />
+                  <ChevronsUpDown
+                    className="h-4 w-4"
+                    style={{ color: darkTheme ? 'white' : 'black' }}
+                  />
                   <span className="sr-only">Toggle</span>
                 </button>
               </CollapsibleTrigger>
@@ -139,13 +145,23 @@ const TabGroupItem: FC<TabGroupItemProps> = ({
           >
             <img src={'/default-favicon.png'} alt="Favicon" className="w-4 h-4 mr-2 hidden" />
             <div className="flex gap-2 items-center justify-start truncate">
-              <div className="bg-gray-700 bg-opacity-20 px-1.5 rounded-full">
+              <div
+                className="bg-gray-700 bg-opacity-20 px-1.5 rounded-full font-semibold"
+                style={{ color: darkTheme ? 'white' : 'black' }}
+              >
                 {tab.title?.charAt(0).toUpperCase()}
               </div>
-              /<span className="truncate">{tab.title ?? tab.url}</span>
+              <span style={{ color: darkTheme ? 'white' : 'black' }}>/</span>
+              <span
+                className="truncate font-semibold"
+                style={{ color: darkTheme ? 'white' : 'black' }}
+              >
+                {tab.title ?? tab.url}
+              </span>
             </div>
             <button
               className="text-red-500 ml-2 z-30"
+              style={{ color: darkTheme ? 'white' : 'black' }}
               onMouseDown={handleMouseDown}
               onMouseUp={() =>
                 handleMouseUp(() => deleteTab(tab.id, unregisterWebviewRef, tabGroup))

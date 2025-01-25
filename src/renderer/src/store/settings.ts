@@ -5,6 +5,7 @@ import { Hotkeys } from 'shared/types/hotkeys';
 
 export interface Settings {
   backgroundColor: string;
+  darkTheme: boolean;
   adBlocker: boolean;
   hotkeys: Hotkeys;
 }
@@ -13,11 +14,13 @@ interface SettingsStore extends Settings {
   setBackgroundColor: (color: string) => void;
   setAdBlocker: (value: boolean) => void;
   setHotkey: (category: string, action: string, newHotkey: string) => void;
+  setDarkTheme: (value: boolean) => void;
   initialize: (settings: Settings) => void;
 }
 
 export const useSettingsStore = create<SettingsStore>((set) => ({
   backgroundColor: defaults.settings.backgroundColor,
+  darkTheme: defaults.settings.darkTheme,
   adBlocker: defaults.settings.adBlocker,
   hotkeys: defaults.settings.hotkeys,
   setBackgroundColor: (color): void => {
@@ -40,6 +43,9 @@ export const useSettingsStore = create<SettingsStore>((set) => ({
         }
       }
     }));
+  },
+  setDarkTheme: (value): void => {
+    set({ darkTheme: value });
   },
   initialize: (settings): void => {
     set({ ...settings });

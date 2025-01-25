@@ -1,4 +1,4 @@
-import { Search, RotateCcw, PanelRightClose, Settings, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Search, RotateCcw, PanelRightClose, Settings, ArrowLeft, ArrowRight, PanelLeftDashed } from 'lucide-react';
 import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
 
@@ -29,7 +29,7 @@ interface SidebarProps {
 export const AppSidebar = (props: SidebarProps): JSX.Element => {
   const { currentTab, handleOpenCommandBox } = props;
   const { isPinned, isOpen, setPinned, isSettings, setSettings } = useSidebarStore();
-  const { backgroundColor } = useSettingsStore();
+  const { backgroundColor, darkTheme } = useSettingsStore();
   const [canGoBack, setCanGoBack] = useState(false);
   const [canGoForward, setCanGoForward] = useState(false);
   const { getTab } = useTabs();
@@ -84,7 +84,7 @@ export const AppSidebar = (props: SidebarProps): JSX.Element => {
       className={clsx(
         'border-none',
         !isPinned &&
-          `shadow-xl fixed top-0 left-0 z-50 h-full  w-64 transition-transform ${
+          `shadow-xl fixed top-0 left-0 z-50 h-full  w-[14rem] transition-transform duration-[70ms] ease-in ${
             isOpen ? 'translate-x-0' : '-translate-x-full'
           }`,
         isPinned && ''
@@ -94,33 +94,34 @@ export const AppSidebar = (props: SidebarProps): JSX.Element => {
       <SidebarContent id="no-drag" style={{ backgroundColor }} className="border-none box-border">
         <NativeControls>
           <Button
-            className={clsx('bg-transparent shadow-none w-5 px-3 h-8 bg-slate-700 bg-opacity-10')}
+            className={clsx('shadow-none w-5 px-3 h-8 bg-gray-900 bg-opacity-10')}
             onClick={() => setSettings(!isSettings)}
           >
-            <Settings />
+            <Settings style={{ color: darkTheme ? 'white' : 'black' }} />
           </Button>
           <Button
             className={clsx(
               'bg-transparent shadow-none w-5 px-3 h-8',
-              isPinned && 'bg-slate-700 bg-opacity-10'
+              isPinned && 'bg-gray-900 bg-opacity-10'
             )}
             onClick={() => setPinned(!isPinned)}
           >
-            <PanelRightClose />
+            <PanelLeftDashed style={{ color: darkTheme ? 'white' : 'black' }}/>
           </Button>
         </NativeControls>
         <Button
-          className="bg-opacity-10 border-none mx-2 z-10 rounded-2xl"
+          className="bg-opacity-10 bg-gray-900 border-black mx-3 z-10 rounded-2xl shadow-none"
           onClick={() => void handleOpenCommandBox(currentTab ? `!url ${currentTab}` : '')}
         >
           <div className="flex justify-between items-center w-full">
-            <Search className="text-[#8a793f]" />
+            <Search className="" style={{ color: darkTheme ? 'white' : 'black' }} />
             <p
               className={clsx(
-                'p-2 w-full',
+                'p-2 w-full font-semibold',
                 !currentTab && 'text-[#8a793f]',
                 currentTab && 'truncate  text-[#5b5029]'
               )}
+              style={{ color: darkTheme ? 'white' : 'black' }}
             >
               {isSettings ? 'Settings' : currentTab ?? 'Suche nach etwas'}
             </p>
@@ -132,17 +133,17 @@ export const AppSidebar = (props: SidebarProps): JSX.Element => {
             onClick={handleUndo}
             disabled={!canGoBack}
           >
-            <ArrowLeft />
+            <ArrowLeft style={{ color: darkTheme ? 'white' : 'black' }} />
           </Button>
           <Button
             className="bg-transparent border-none shadow-none w-1/2"
             onClick={handleRedo}
             disabled={!canGoForward}
           >
-            <ArrowRight />
+            <ArrowRight style={{ color: darkTheme ? 'white' : 'black' }} />
           </Button>
           <Button className="bg-transparent border-none shadow-none w-1/2" onClick={handleReload}>
-            <RotateCcw />
+            <RotateCcw style={{ color: darkTheme ? 'white' : 'black' }} />
           </Button>
         </div>
         <hr className="mx-2 text-[#8a793f]" />

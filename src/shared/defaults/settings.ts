@@ -1,6 +1,7 @@
 export const defaults = {
   settings: {
     backgroundColor: '#b7a153',
+    darkTheme: false,
     adBlocker: false,
     hotkeys: {
       Split: {

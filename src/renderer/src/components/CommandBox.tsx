@@ -104,7 +104,12 @@ export const CommandBox = ({ defaultInput, handleUrlChange }: CommandBoxProps): 
       className="absolute z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full flex justify-center items-center text-white"
       onMouseDown={() => setCmdOpen(!isCmdOpen)}
     >
-      <div role="button" tabIndex={0} className="w-2/3" onMouseDown={() => setCmdOpen(!isCmdOpen)}>
+      <div
+        role="button"
+        tabIndex={0}
+        className="w-2/3 max-w-4xl"
+        onMouseDown={() => setCmdOpen(!isCmdOpen)}
+      >
         <Command
           className="rounded-2xl shadow-md bg-gray-900 bg-opacity-60 h-2/5 backdrop-blur-2xl outline-none z-[9999]"
           shouldFilter={!isWebsearch}

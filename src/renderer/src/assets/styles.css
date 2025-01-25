@@ -98,7 +98,7 @@
 
   .sidebar {
     transform: translateX(-100%);
-    transition: transform 0.1s ease;
+    transition: transform 0.01s ease-in-out;
   }
 
   .sidebar-trigger:hover + .sidebar,
@@ -163,6 +163,8 @@
 .mosaic .mosaic-window-toolbar {
   background-color: #40403e;
   color: white;
+  height: 25px;
+
 }
 
 .mosaic.hide-toolbar .mosaic-window-body {

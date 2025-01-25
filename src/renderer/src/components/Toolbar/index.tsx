@@ -66,7 +66,7 @@ export const Toolbar = ({ id, title, tabGroup }: ToolbarProps): JSX.Element => {
   };
 
   return (
-    <div className="h-full w-full flex items-center justify-between gap-2 mr-2">
+    <div className="w-full flex items-center justify-between gap-2 mr-2">
       <div className="flex gap-3">
         <button onClick={handleUndo} disabled={!canGoBack}>
           <ArrowLeft width={17} />
@@ -78,7 +78,7 @@ export const Toolbar = ({ id, title, tabGroup }: ToolbarProps): JSX.Element => {
           <RefreshCcw width={15} />
         </button>
       </div>
-      <p className="truncate">
+      <p className="truncate max-w-md">
         {title}{' '}
         <span className="text-green-600">{id === tabGroup.active.id ? '- Active' : ''}</span>
       </p>

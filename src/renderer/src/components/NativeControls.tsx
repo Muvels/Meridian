@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import React, { ReactNode } from 'react';
 
 import { useSidebarStore } from '@renderer/store/sidebar';
+import { Maximize2, Minimize2Icon, Minus, X } from 'lucide-react';
 
 interface NativeControlsProps {
   children?: ReactNode; // `children` can be any valid React node
@@ -24,20 +25,26 @@ const NativeControls: React.FC<NativeControlsProps> = ({ children }) => {
                     hover:scale-105 transition-transform duration-300 ease-in-out"
       >
         <button
-          className="w-3 h-3 bg-red-500 rounded-full hover:scale-125 hover:bg-red-600 active:scale-90 transition-all duration-200"
+          className="w-4 h-4 bg-red-500 rounded-xl hover:scale-125 hover:bg-red-600 active:scale-90 transition-all duration-200 flex justify-center items-center"
           onClick={() => handleAction('close')}
           title="Close"
-        />
+        >
+          <X className="w-3 h-3 text-white" />
+        </button>
         <button
-          className="w-3 h-3 bg-yellow-500 rounded-full hover:scale-125 hover:bg-yellow-600 active:scale-90 transition-all duration-200"
+          className="w-4 h-4 bg-yellow-500 rounded-xl hover:scale-125 hover:bg-yellow-600 active:scale-90 transition-all duration-200 flex justify-center items-center"
           onClick={() => handleAction('minimize')}
           title="Minimize"
-        />
+        >
+          <Minus className="w-3 h-3 text-white" />
+        </button>
         <button
-          className="w-3 h-3 bg-green-500 rounded-full hover:scale-125 hover:bg-green-600 active:scale-90 transition-all duration-200"
+          className="w-4 h-4 bg-green-500 rounded-xl hover:scale-125 hover:bg-green-600 active:scale-90 transition-all duration-200 flex justify-center items-center"
           onClick={() => handleAction('fullscreen')}
           title="Fullscreen"
-        />
+        >
+          <Maximize2 className="w-2 h-2 text-white" />
+        </button>
       </div>
 
       {/* Render children */}

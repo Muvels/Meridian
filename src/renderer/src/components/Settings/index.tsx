@@ -16,7 +16,6 @@ interface SettingsProps {
 
 const suggestedColors = [
   '#b7a153',
-  '#7393B3',
   '#d1b6c6',
   '#cccccc',
   '#CAF1DE',
@@ -24,10 +23,18 @@ const suggestedColors = [
   '#F7D8BA',
   '#ECDEAA'
 ];
+const suggestedDarkColors = ['#7393B3', '#465970', '#3b4f68', '#7495bc'];
 
 const Settings: React.FC<SettingsProps> = () => {
-  const { backgroundColor, adBlocker, setBackgroundColor, setAdBlocker, hotkeys, setHotkey } =
-    useSettingsStore();
+  const {
+    backgroundColor,
+    adBlocker,
+    setBackgroundColor,
+    setAdBlocker,
+    hotkeys,
+    setHotkey,
+    setDarkTheme
+  } = useSettingsStore();
   const [tempHotkeys, setTempHotkeys] = useState(hotkeys);
 
   const handleInputChange = (categoryName, actionName, value): void => {
@@ -46,7 +53,7 @@ const Settings: React.FC<SettingsProps> = () => {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto py-12 px-4 md:px-6">
+    <div className="w-full max-w-4xl mx-auto py-12 px-4 md:px-6 text-black">
       <div className="space-y-4">
         <div>
           <div className="flex gap-3 items-center mb-1">
@@ -60,9 +67,9 @@ const Settings: React.FC<SettingsProps> = () => {
           <hr className="my-3" />
         </div>
         <div className="grid gap-8">
-          <Card className="rounded-md">
+          <Card className="rounded-md text-black">
             <CardHeader>
-              <CardTitle>Welcome Tab</CardTitle>
+              <CardTitle className="text-black">Welcome Tab</CardTitle>
               <CardDescription>
                 Change your name, so the browser can greet you when opening.
               </CardDescription>
@@ -89,7 +96,27 @@ const Settings: React.FC<SettingsProps> = () => {
                       backgroundColor === color && 'ring-2 ring-black'
                     )}
                     style={{ backgroundColor: color }}
-                    onClick={() => setBackgroundColor(color)}
+                    onClick={() => {
+                      setBackgroundColor(color);
+                      setDarkTheme(false);
+                    }}
+                  />
+                ))}
+              </div>
+              <CardTitle>Dark Themes</CardTitle>
+              <div className="flex items-center space-x-3">
+                {suggestedDarkColors.map((color, index) => (
+                  <button
+                    key={index}
+                    className={clsx(
+                      `h-10 w-10 rounded-full`,
+                      backgroundColor === color && 'ring-2 ring-black'
+                    )}
+                    style={{ backgroundColor: color }}
+                    onClick={() => {
+                      setBackgroundColor(color);
+                      setDarkTheme(true);
+                    }}
                   />
                 ))}
               </div>

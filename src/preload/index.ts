@@ -11,6 +11,7 @@ const api = {
   maximize: (): void => ipcRenderer.send('maximize'),
   minimize: (): void => ipcRenderer.send('minimize'),
   close: (): void => ipcRenderer.send('close'),
+  platform: process.platform,
   suggest: (q: string): Promise<{ phrase: string }[]> =>
     ipcRenderer.invoke('get-suggestions', q) as Promise<{ phrase: string }[]>,
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type

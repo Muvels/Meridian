@@ -4,6 +4,7 @@ interface api {
   maximize: () => void;
   minimize: () => void;
   close: () => void;
+  platform: string;
   suggest: (q: string) => Promise<{ phrase: string }[]>;
   onCheckUpdate: (callback: () => void) => void;
   offCheckUpdate: (callback: () => void) => void;

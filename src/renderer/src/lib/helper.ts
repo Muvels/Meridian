@@ -40,6 +40,18 @@ export const customScrollbarCSS = `
   }
 `;
 
+export function getBaseUrl(url: string): string {
+  try {
+    // Create a URL object
+    const urlObj = new URL(url);
+    // Return the base URL
+    return `${urlObj.host}`;
+  } catch (error) {
+    console.error('Invalid URL:', error);
+    return url; // Return null if the input URL is invalid
+  }
+}
+
 export interface PageFaviconUpdatedEvent extends Event {
   favicons: string[];
 }

@@ -19,7 +19,7 @@ import { useSettingsStore } from '@renderer/store/settings';
 import Tabs from '../Tabs';
 import { DrawerTrigger } from '../ui/drawer';
 import { Button } from '../ui/button';
-import NativeControls from '../NativeControls';
+import { NativeSidebarControls } from '../NativeControls/NativeSidebarControls';
 import UpdateNotification from '../update-badge';
 
 interface SidebarProps {
@@ -97,7 +97,7 @@ export const AppSidebar = (props: SidebarProps): JSX.Element => {
       variant={isPinned ? 'sidebar' : 'floating'}
     >
       <SidebarContent id="no-drag" style={{ backgroundColor }} className="border-none box-border">
-        <NativeControls>
+        <NativeSidebarControls>
           <Button
             className={clsx('shadow-none w-5 px-3 h-8 bg-gray-900 bg-opacity-10')}
             onClick={() => setSettings(!isSettings)}
@@ -113,7 +113,7 @@ export const AppSidebar = (props: SidebarProps): JSX.Element => {
           >
             <PanelLeftDashed style={{ color: darkTheme ? 'white' : 'black' }} />
           </Button>
-        </NativeControls>
+        </NativeSidebarControls>
         <Button
           className="bg-opacity-10 bg-gray-900 border-black mx-3 z-10 rounded-2xl shadow-none"
           onClick={() => void handleOpenCommandBox(currentTab ? `!url ${currentTab}` : '')}

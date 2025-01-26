@@ -27,7 +27,7 @@ function createWindow(): void {
     show: true,
     autoHideMenuBar: true,
     transparent: false,
-    titleBarStyle: 'default', // Keeps macOS window buttons
+    titleBarStyle: process.platform === 'darwin' ? 'default' : 'hiddenInset', // Dont show buttons on macos
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       contextIsolation: true,

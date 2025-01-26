@@ -12,7 +12,7 @@ import { Drawer, DrawerContent, DrawerFooter } from './components/ui/drawer';
 import { useTabGroupStore } from './store/tabs';
 import { useTabs } from './hooks/use-tabs';
 import { MosaicView } from './components/Tiling/MosaicView';
-import { webviewDebugger, customScrollbarCSS } from './lib/helper';
+import { webviewDebugger, customScrollbarCSS, getBaseUrl } from './lib/helper';
 import '@blueprintjs/core/lib/css/blueprint.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import 'react-mosaic-component/react-mosaic-component.css';
@@ -20,6 +20,8 @@ import './assets/styles.css';
 import Settings from './components/Settings';
 import { useSettingsStore } from './store/settings';
 import { CommandBox } from './components/CommandBox';
+import { NativeWindowsControls } from './components/NativeControls/NativeWindowsControls';
+import { NativeMacControls } from './components/NativeControls/NativeMacControls';
 
 function App(): JSX.Element {
   // const { updateTabTitle, updateTabFavicon, updateTabUrl } = useTabStore()
@@ -34,9 +36,18 @@ function App(): JSX.Element {
     layout,
     handleNavigation
   } = useTabGroupStore();
-  const { isPinned, setOpen, isOpen, isSettings, setPinned, isCmdOpen, setCmdOpen } =
-    useSidebarStore();
-  const { backgroundColor, hotkeys } = useSettingsStore();
+  const {
+    isPinned,
+    setOpen,
+    isOpen,
+    isSettings,
+    setPinned,
+    isCmdOpen,
+    setCmdOpen,
+    isTopBarOpen,
+    setTopBarOpen
+  } = useSidebarStore();
+  const { backgroundColor, hotkeys, darkTheme } = useSettingsStore();
   const { getTab } = useTabs();
   const [isClickable, setIsClickable] = useState(true);
   const [commandBoxUrl, setCommandBoxUrl] = useState('');
@@ -176,6 +187,11 @@ function App(): JSX.Element {
         onMouseEnter={() => setOpen(false)}
         className="absolute right-0 h-full w-4/5 z-50"
       />
+      <div
+        hidden={!isTopBarOpen}
+        onMouseEnter={() => setTopBarOpen(false)}
+        className="absolute bottom-0 w-full h-[calc(100vh-3rem)] z-50"
+      />
       {isCmdOpen ? (
         <CommandBox defaultInput={commandBoxUrl} handleUrlChange={handleUrlChange} />
       ) : (
@@ -200,13 +216,39 @@ function App(): JSX.Element {
               isPinned && 'py-2 pr-2'
             )}
           >
+            <div
+              hidden={isTopBarOpen}
+              onMouseEnter={() => setTopBarOpen(true)}
+              className="absolute left-0 top-0 h-[20px] w-full z-50"
+            />
+            {/* If we have Window as platform, the default should be the windows controls.*/}
+            <div
+              id="no-drag"
+              className={clsx(
+                '',
+                `flex justify-center items-center w-full transition-transform duration-[70ms] ease-in ${
+                  isTopBarOpen ? 'h-[32px] translate-y-0' : 'hidden -translate-y-full'
+                }`
+              )}
+            >
+              {!isPinned && <NativeMacControls />}
+              <button
+                className={clsx(
+                  'truncate max-w-md bg-gray-300 bg-opacity-5 py-0.5 px-3 rounded',
+                  clsx(darkTheme ? 'text-white' : 'text-black')
+                )}
+              >
+                {getBaseUrl(activeTabGroup?.active.url ?? '')}
+              </button>
+              <NativeWindowsControls />
+            </div>
             <div id="no-drag" className="rounded-lg overflow-hidden text-black">
               {activeTabGroup ? (
                 <div>
                   <div
                     className={clsx(
                       'w-full flex justify-center items-center',
-                      isPinned ? 'h-[calc(100vh-1*1rem)]' : 'h-[calc(100vh-1*1rem)]'
+                      !isTopBarOpen ? 'h-[calc(100vh-1*1rem)]' : 'h-[calc(100vh-1*3rem)]'
                     )}
                   >
                     <MosaicView
@@ -222,7 +264,7 @@ function App(): JSX.Element {
                 <div
                   className={clsx(
                     'w-full bg-white overflow-auto',
-                    isPinned ? 'h-[calc(100vh-1*1rem)]' : 'h-[calc(100vh-1*1rem)]'
+                    !isTopBarOpen ? 'h-[calc(100vh-1*1rem)]' : 'h-[calc(100vh-1*3rem)]'
                   )}
                 >
                   <Settings />
@@ -231,7 +273,7 @@ function App(): JSX.Element {
                 <div
                   className={clsx(
                     'w-full bg-white overflow-auto',
-                    isPinned ? 'h-[calc(100vh-1*1rem)]' : 'h-[calc(100vh-1*1rem)]'
+                    !isTopBarOpen ? 'h-[calc(100vh-1*1rem)]' : 'h-[calc(100vh-1*3rem)]'
                   )}
                 ></div>
               )}
